@@ -5,9 +5,12 @@ import tensorflow as tf
 from tensorflow.keras.preprocessing.text import Tokenizer
 import jieba  # 结巴分词 工具
 
+# 初始化结巴分词
 def setup_jieba():
     jieba.initialize()
 
+#输入：用户信息，分词模式 (True = 全模式)
+#输出：词组的list
 def fen_ci(message, cut_mode):
     seg_list = jieba.cut(message, cut_mode)
     return list(seg_list)

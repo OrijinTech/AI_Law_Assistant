@@ -17,16 +17,15 @@ def get_user_message():
 #Set up everything here
 def machine_set_up():
     setup_jieba()
-    dictionary_setup("Keyword_notebook")
+    dictionary_setup("Dictionaries/Keyword_notebook")
 
 
 def main(start_var):
     machine_set_up()
-    message_text = get_user_message()
-    add_to_dictionary("我")
+    message_text = "猫猫太可爱怎么办，可以偷吗？会不会要赔猫，怎么赔？" #get_user_message()
     split_list = fen_ci(message_text, True)
     print(split_list)
-    add_to_dictionary(split_list[0])
+    add_to_dictionary(split_list[0], "Dictionaries/Keyword_notebook")
 
 
 # Press the green button in the gutter to run the script.
