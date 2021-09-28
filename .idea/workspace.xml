@@ -1,12 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="03347b53-69b5-40ae-ad60-26f1f8cd35b4" name="Changes" comment="Updated dictionary functions for jieba.">
-      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+    <list default="true" id="03347b53-69b5-40ae-ad60-26f1f8cd35b4" name="Changes" comment="updated environment">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Dictionaries/Sorted_Dictionary" beforeDir="false" afterPath="$PROJECT_DIR$/Dictionaries/Sorted_Dictionary" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Word_splitter.py" beforeDir="false" afterPath="$PROJECT_DIR$/Word_splitter.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -109,7 +106,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1632668258723</updated>
-      <workItem from="1632797203218" duration="713000" />
+      <workItem from="1632797203218" duration="1400000" />
     </task>
     <task id="LOCAL-00001" summary="Addition">
       <created>1632669792263</created>
@@ -132,7 +129,14 @@
       <option name="project" value="LOCAL" />
       <updated>1632694894551</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="updated environment">
+      <created>1632798142202</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1632798142202</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -166,6 +170,7 @@
     <MESSAGE value="Addition" />
     <MESSAGE value="Added a file." />
     <MESSAGE value="Updated dictionary functions for jieba." />
-    <option name="LAST_COMMIT_MESSAGE" value="Updated dictionary functions for jieba." />
+    <MESSAGE value="updated environment" />
+    <option name="LAST_COMMIT_MESSAGE" value="updated environment" />
   </component>
 </project>
