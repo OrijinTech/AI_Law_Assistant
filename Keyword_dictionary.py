@@ -38,12 +38,12 @@ def sort_file_by_pinyin(file_to_sort, target_dictionary):
     pinyin_list = []
     for line in file_to_work:
         file_word_list.append(line.split(" ", 2))
-    print(file_word_list)
+    #print(file_word_list)
     for i in file_word_list:
         pinyin_list.append(lazy_pinyin(i, strict=False))
-    print(pinyin_list)
+    #(pinyin_list)
     words_sorted = sort_pinyin_list(pinyin_list, file_word_list)
-    print(words_sorted)
+    #print(words_sorted)
     update_dictionary(target_dictionary, words_sorted)
 
 
