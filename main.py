@@ -5,6 +5,8 @@
 import sys
 from Word_splitter import *
 from Keyword_dictionary import *
+from Error_detector import *
+from test_file import *
 
 user_message = ""
 
@@ -21,11 +23,14 @@ def machine_set_up():
 
 
 def main(start_var):
-    machine_set_up()
-    message_text = "猫猫太可爱怎么办，可以偷吗？会不会要赔猫，怎么赔？" #get_user_message()
-    split_list = fen_ci(message_text, True)
-    print(split_list)
-    add_to_dictionary(split_list[0], "Dictionaries/Keyword_notebook")
+    # machine_set_up()
+    # message_text = "猫猫太可爱怎么办，可以偷吗？会不会要赔猫，怎么赔？" #get_user_message()
+    # corrected_text = make_correction(message_text)
+    # split_list = fen_ci(corrected_text, True)
+    # print(split_list)
+    # add_to_dictionary(split_list[0], "Dictionaries/Keyword_notebook")
+
+    return 0
 
 
 # Press the green button in the gutter to run the script.
