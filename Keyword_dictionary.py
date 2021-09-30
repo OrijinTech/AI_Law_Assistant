@@ -7,6 +7,7 @@ def dictionary_setup(filename):
     jieba.load_userdict(filename)
 
 def add_to_dictionary(new_word, filename):
+
     write_to = open(filename, "a", encoding="utf-8")
     jieba.add_word(new_word)
     write_to.write(new_word + "\n")
@@ -21,6 +22,7 @@ def delete_from_dictionary(word_for_deletion, filename):
 
 #这里需要改进
 def sort_pinyin_list(pinyin_list, word_list):
+
     # Getting the length of list
     # of tuples
     n = len(pinyin_list)
