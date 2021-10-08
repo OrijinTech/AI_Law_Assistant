@@ -1,6 +1,7 @@
 # 这个文件是用来整理，编辑关键词词典的
 import jieba
 from pypinyin import *
+from support_fnc import *
 
 
 def dictionary_setup(filename):
@@ -115,10 +116,49 @@ def update_dictionary(sorted_dictionary, list_of_words):
     sorted_to_dictionary = open(sorted_dictionary, "a", encoding="utf-8")
     clear_dictionary(sorted_dictionary)
     for words in list_of_words:
-        sorted_to_dictionary.write(words[0] + " " + words[1])
+        if cont_num(words):
+            sorted_to_dictionary.write(words[0] + " " + words[1])
+        else:
+            sorted_to_dictionary.write(words[0] + " ")
 
 
+def search_keyword(dictionary, keyword):
+    '''
+    在词典里搜索对应的词语 https://stackoverflow.com/questions/3449384/fastest-text-search-method-in-a-large-text-file
+    :param dictionary: 目标搜索词典
+    :type dictionary: file
+    :param keyword: 需要搜索的关键词
+    :type keyword: str
+    :return: str or none for not found
+    :rtype: str
+    '''
+    file_to_work = open(dictionary, "r", encoding="utf-8")
+    is_found = ""
+    print("正在寻找词语:", keyword)
+    for each_word in file_to_work:
+        if len(each_word) == 0:
+            break
+        if keyword in each_word:
+            is_found = each_word
+            break
+    return is_found
 
 
+def in_dictionary(dictionary, keyword):
+    '''
+    词典里是否存在该词语
+    :param dictionary: 目标搜索词典
+    :type dictionary: file
+    :param keyword: 需要搜索的关键词
+    :type keyword: str
+    :return: 该词典（有/没有）词语
+    :rtype: bool
+    '''
+    cmpword = search_keyword(dictionary, keyword)
+    if keyword in cmpword:
+        return True
+    else:
+        print("未在对应词典内找到您所需要的关键词")
+        return False
 
 

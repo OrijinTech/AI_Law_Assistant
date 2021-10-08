@@ -9,5 +9,12 @@ def test_sortfile():
 
 
 def test_make_correction(message):
-    print("Correct sentence is: ",make_correction(message))
+    print("Correct sentence is: ", make_correction(message))
 
+
+def test_search_keyword():
+    print("已找到词语:", search_keyword("Dictionaries/Test_dictionary", "抢劫"))
+
+
+def test_in_dictionary():
+    print("该词语在词典中：", in_dictionary("Dictionaries/Test_dictionary","抢劫"))
