@@ -2,11 +2,9 @@
 
 # Press Shift+F10 to execute it or replace it with your code.
 # Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
-import sys
-from Word_splitter import *
-from Keyword_dictionary import *
-from Error_detector import *
-from test_file import *
+from Tools.Keyword_dictionary import *
+from Tools.Word_splitter import *
+from Tools.test_file import *
 import filecmp
 from os.path import exists
 
