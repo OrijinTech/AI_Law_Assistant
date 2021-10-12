@@ -81,16 +81,17 @@ except:
 def bag_of_words(s, words):
     bag = [0 for _ in range(len(words))]
     s_words = nltk.word_tokenize(s)
-    s_words = [stemmer.stem(word.lower() for word in s_words)]
+    s_words = [stemmer.stem(word.lower()) for word in s_words]
 
     for se in s_words:
         for i, w in enumerate(words):
             if w == se:
-                bag.append(1)
+                bag[i] = 1
     return np.array(bag)
 
 
 def chat():
+    global responses
     print("请开始说话（输入 quit 来结束对话）")
     while True:
         inp = input("您： ")
@@ -100,7 +101,11 @@ def chat():
         results = model.predict([bag_of_words(inp, words)])
         results_index = numpy.argmax(results)
         tag = labels[results_index]
-        print(tag)
+        # print(tag)
+        for tg in data["intents"]:
+            if tg['tag'] == tag:
+                responses = tg['responses']
+        print(random.choice(responses))
 
 
 chat()
