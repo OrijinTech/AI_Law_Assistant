@@ -18,3 +18,5 @@ def test_search_keyword():
 
 def test_in_dictionary():
     print("该词语在词典中：", in_dictionary("Dictionaries/Test_dictionary","抢劫"))
+
+

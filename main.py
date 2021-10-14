@@ -29,14 +29,22 @@ def machine_set_up():
 
 
 def main(start_var):
-    machine_set_up()
-    test_search_keyword()
-    test_in_dictionary()
+    # machine_set_up()
+    # test_search_keyword()
+    # test_in_dictionary()
     # message_text = "猫猫太可爱怎么办，可以偷吗？会不会要赔猫，怎么赔？" #get_user_message()
     # corrected_text = make_correction(message_text)
     # split_list = fen_ci(corrected_text, True)
     # print(split_list)
     # add_to_dictionary(split_list[0], "Dictionaries/Keyword_notebook")
+    key_list = []
+    with open("Dictionaries/Sorted_Dictionary", "r", encoding="utf-8") as f:
+        for line in f:
+            key_list.append(line.strip())
+
+    print(key_list)
+
+
     return 0
 
 
