@@ -10,6 +10,7 @@ import pickle
 
 stemmer = LancasterStemmer()
 
+
 with open("../Language_Data/intents.json") as file:
     data = json.load(file)
 
