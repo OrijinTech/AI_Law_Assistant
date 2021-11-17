@@ -10,23 +10,28 @@
          "context_set": ""
         },
         {"tag": "age",
-         "patterns": ["how old", "how old is tim", "what is your age", "how old are you", "age?"],
+         "patterns": ["how old", "how old is Yongxiang", "age of Yongxiang?"],
          "responses": ["I am 18 years old!", "18 years young!"],
          "context_set": ""
         },
         {"tag": "name",
-         "patterns": ["what is your name", "what should I call you", "whats your name?"],
-         "responses": ["You can call me Tim.", "I'm Tim!", "I'm Tim aka Tech With Tim."],
+         "patterns": ["what is your name", "what should I call you", "whats your name?", "who are you?", "what are you?"],
+         "responses": ["You can call me YU.", "I'm YU!", "I am the version 0.1 of Yu"],
          "context_set": ""
         },
-        {"tag": "shop",
-         "patterns": ["Id like to buy something", "whats on the menu", "what do you reccommend?", "could i get something to eat"],
-         "responses": ["We sell chocolate chip cookies for $2!", "Cookies are on the menu!"],
+        {"tag": "School",
+         "patterns": ["What do you think about WPI", "What is WPI", "Tell me about WPI", "WPI", "Worcester Polytechnic Institute"],
+         "responses": ["I think WPI is a great school.", "This school has a great robotics engineering program, you should check it out!"],
          "context_set": ""
         },
         {"tag": "hours",
          "patterns": ["when are you guys open", "what are your hours", "hours of operation"],
          "responses": ["We are open 7am-4pm Monday-Friday!"],
+         "context_set": ""
+        },
+        {"tag": "unknown",
+         "patterns": ["Where are my keys to the room?", "Can you fly?", "Why cannot I get 4.0 GPA?", "Bad grades?"],
+         "responses": ["I am sorry, I yet cannot respond to that question.", "Yongxiang would be mad if I give him my honest response Q^Q", "I don't think I can help you with that."],
          "context_set": ""
         }
    ]
