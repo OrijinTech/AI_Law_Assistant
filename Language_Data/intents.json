@@ -1,17 +1,17 @@
 {"intents": [
         {"tag": "greeting",
-         "patterns": ["Hi", "How are you", "Is anyone there?", "Hello", "Good day", "Whats up"],
+         "patterns": ["Hi", "How are you", "Is anyone there?", "Hello", "Good day", "Whats up", "Yo", "how you doing man"],
          "responses": ["Hello!", "Good to see you again!", "Hi there, how can I help?"],
          "context_set": ""
         },
         {"tag": "goodbye",
-         "patterns": ["cya", "See you later", "Goodbye", "I am Leaving", "Have a Good day"],
+         "patterns": ["cya", "See you later", "Goodbye", "I am Leaving", "Have a Good day", "see ya", "later boy"],
          "responses": ["Sad to see you go :(", "Talk to you later", "Goodbye!"],
          "context_set": ""
         },
-        {"tag": "age",
-         "patterns": ["how old", "how old is Yongxiang", "age of Yongxiang?"],
-         "responses": ["I am 18 years old!", "18 years young!"],
+        {"tag": "creator age",
+         "patterns": ["how old", "how old is Yongxiang", "age of Yongxiang?", "Yongxiang's age"],
+         "responses": ["Sorry, you should ask my creator for his age", "18 years young!"],
          "context_set": ""
         },
         {"tag": "name",
@@ -24,9 +24,9 @@
          "responses": ["I think WPI is a great school.", "This school has a great robotics engineering program, you should check it out!"],
          "context_set": ""
         },
-        {"tag": "hours",
-         "patterns": ["when are you guys open", "what are your hours", "hours of operation"],
-         "responses": ["We are open 7am-4pm Monday-Friday!"],
+        {"tag": "games",
+         "patterns": ["what is your favorite game?", "game", "league of legends", "Apex Legends", "Battlefield", "what do you play?"],
+         "responses": ["ALL FATHER GIVE ME SIGHT!"],
          "context_set": ""
         },
         {"tag": "unknown",
