@@ -107,7 +107,7 @@ def chat():
         #print(results)
         results_index = numpy.argmax(results)
         tag = labels[results_index]
-
+        #probability threshold
         if results[results_index] > 0.7:
             #print("this is: " + tag)
             for tg in data["intents"]:
