@@ -1,6 +1,7 @@
 import sys
 from Tools.Keyword_dictionary import *
 from Tools.Error_detector import *
+from Tools.data_modification import *
 
 
 def test_sortfile():
@@ -19,4 +20,8 @@ def test_search_keyword():
 def test_in_dictionary():
     print("该词语在词典中：", in_dictionary("Dictionaries/Test_dictionary","抢劫"))
 
+
+def test_data_modification(sentence, law_type):
+    add_to_file(sentence, law_type)
+    print("Now look at Law_Data.json file to see the update!")
 

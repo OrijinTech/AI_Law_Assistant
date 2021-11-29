@@ -130,9 +130,9 @@
            "responses": ["已检测到您给出的问题有关动物侵权。 但我还不会回答。"],
            "context_set": ""},
 
-    {"law_type": "Conversation",
-           "law_keywords": ["在吗", "我需要帮助", "Is anyone there?", "Hello", "Good day", "Whats up"],
+    {"law_type": "日常对话",
+           "law_keywords": ["在吗", "我需要帮助", "嗨，在吗", "我遇到了问题"],
            "responses": ["Hello!", "Good to see you again!", "Hi there, how can I help?"],
-           "context_set": ""}
+           "context_set": ""},
   ]
 }

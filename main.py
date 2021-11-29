@@ -37,12 +37,13 @@ def main(start_var):
     # split_list = fen_ci(corrected_text, True)
     # print(split_list)
     # add_to_dictionary(split_list[0], "Dictionaries/Keyword_notebook")
-    key_list = []
-    with open("Dictionaries/Sorted_Dictionary", "r", encoding="utf-8") as f:
-        for line in f:
-            key_list.append(line.strip())
-
-    print(key_list)
+    # key_list = []
+    # with open("Dictionaries/Sorted_Dictionary", "r", encoding="utf-8") as f:
+    #     for line in f:
+    #         key_list.append(line.strip())
+    #
+    # print(key_list)
+    test_data_modification("你好啊", "law_keywords")
 
 
     return 0
