@@ -22,6 +22,6 @@ def test_in_dictionary():
 
 
 def test_data_modification(sentence, law_type):
-    add_to_file(sentence, law_type)
+    add_pattern(sentence, law_type)
     print("Now look at Law_Data.json file to see the update!")
 

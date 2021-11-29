@@ -43,7 +43,7 @@ def main(start_var):
     #         key_list.append(line.strip())
     #
     # print(key_list)
-    test_data_modification("你好啊", "law_keywords")
+    test_data_modification("你好啊", "日常对话")
 
 
     return 0
