@@ -1,4 +1,5 @@
-import re
+
+
 
 def cont_num(keyword) -> bool:
     '''
@@ -10,15 +11,6 @@ def cont_num(keyword) -> bool:
     '''
     return any(char.isdigit() for char in keyword)
 
-
-
-
-
-
-
-
-
-
-
-
-
+def clear_chat():
+    for i in range(50):
+        print("\n")

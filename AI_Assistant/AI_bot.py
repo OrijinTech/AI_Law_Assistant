@@ -1,5 +1,4 @@
 import numpy as np
-import tensorboard
 import tensorflow
 import random
 import json
@@ -8,13 +7,11 @@ import numpy
 import tflearn
 import jieba
 import AI_StateMachine
-import stopwordsiso
-import pickle
-import datetime
 from nltk.stem.lancaster import \
     LancasterStemmer  # Used to analyze words from the sentence (getting the root of the word --> only for English)
 from stopwordsiso import stopwords
 from Tools import data_modification
+from Tools import support_fnc
 
 # Global Variables
 initial_state = AI_StateMachine.States.CHAT
@@ -63,10 +60,9 @@ for intent in data["law_database"]:
 #         docs_y.append(intent["tag"])
 #         if intent["tag"] not in labels:
 #             labels.append(intent["tag"])
-print("WORDS LIST: ", words)
 
 words = [stemmer.stem(w.lower()) for w in words if w not in "?"]  # convert words into lower case
-words = sorted(list(set(words)))  # sort and remove duplicates
+# words = sorted(list(set(words)))  # sort and remove duplicates
 labels = sorted(labels)
 training = []
 output = []
@@ -95,7 +91,7 @@ output = np.array(output)
 
 num_neurons = 12
 batchsize = 12
-epoch_num = 150
+epoch_num = 120
 # Input Layer
 net = tflearn.input_data(shape=[None, len(training[0])])
 # Hidden Layers
@@ -108,7 +104,9 @@ net = tflearn.fully_connected(net, len(output[0]), activation="softmax")
 net = tflearn.regression(net)
 model = tflearn.DNN(net)
 
-model.fit(training, output, n_epoch=epoch_num, batch_size=batchsize, show_metric=True)
+model.fit(training, output, n_epoch=epoch_num, batch_size=batchsize,
+          show_metric=True)  # show_metric=True if you want training report
+
 
 # Comment out try catch, just leave model.fit for training
 # try:
@@ -150,12 +148,12 @@ def bag_of_words_chinese(s, words):
 
 
 def chat():
+    support_fnc.clear_chat()
     global initial_state
-
     while True:
         # Chat State
         if initial_state == AI_StateMachine.States.CHAT:
-            print("请开始说话（输入 quit 来结束对话）")
+            print("您好, 我是普法小助手YU, 有什么可以帮助您的吗？（输入 quit 来结束对话）")
             while True:
                 inp = input("您： ")
                 if inp.lower() == "quit":
@@ -164,8 +162,12 @@ def chat():
                 results = model.predict([bag_of_words_chinese(inp, words)])[0]  # Chinese Version
                 results_index = numpy.argmax(results)
                 law_type = labels[results_index]
-                print("result accuracy: ", results[results_index])
-                if results[results_index] > 0.6:  # probability threshold
+                result_percentage = round(results[results_index] * 100, 2)
+                if results[results_index] > 0.7:
+                    print("YU有", result_percentage, "% 的确定性")
+                else:
+                    print("很抱歉, 我只有", result_percentage, "% 的确定性")
+                if results[results_index] > 0.7:  # probability threshold
                     for tg in data["law_database"]:
                         if tg['law_type'] == law_type:
                             responses = tg['responses']
@@ -239,5 +241,6 @@ def chat():
 
 
 # STARTING POINT
+
 chat()
 # chat_english()
