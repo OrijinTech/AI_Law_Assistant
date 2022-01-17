@@ -29,3 +29,5 @@ def fen_ci(message, cut_mode):
     '''
     seg_list = jieba.cut(message, cut_mode)
     return list(seg_list)
+
+
