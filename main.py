@@ -7,6 +7,7 @@ from Tools.Word_splitter import *
 from Tools.test_file import *
 import filecmp
 from os.path import exists
+import difflib
 
 user_message = ""
 
@@ -43,8 +44,8 @@ def main(start_var):
     #         key_list.append(line.strip())
     #
     # print(key_list)
-    test_data_modification("你好啊", "日常对话")
-
+    print(difflib.SequenceMatcher(None, "我想测试B组", "您好，现在已探测到A组测试，希望正确。").quick_ratio())
+    print(difflib.SequenceMatcher(None, "我想测试B组", "您好，现在已探测到B组测试，希望正确。").quick_ratio())
 
     return 0
 
