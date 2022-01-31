@@ -16,7 +16,7 @@
         },
         {"tag": "name",
          "patterns": ["what is your name", "what should I call you", "whats your name?", "who are you?", "what are you?"],
-         "responses": ["You can call me YU.", "I'm YU!", "I am the version 0.1 of Yu"],
+         "responses": ["You can call me AIYU.", "I'm AIYU!", "I am the version 1.0 of AIYU"],
          "context_set": ""
         },
         {"tag": "School",

@@ -1,6 +1,3 @@
-
-
-
 def cont_num(keyword) -> bool:
     '''
     检测str内是否有integer
