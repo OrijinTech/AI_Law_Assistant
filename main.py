@@ -1,52 +1,26 @@
-# This is a sample Python script.
-
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
-from Tools.Keyword_dictionary import *
-from Tools.Word_splitter import *
 from Tools.test_file import *
-import filecmp
-from os.path import exists
-import difflib
+from AI_Assistant import Aiyu
 
-user_message = ""
+#Creating Lists
+training_set = []
+output_data = []
+words = []
+labels = []
+docs_x = []
+docs_y = []
+model = None
 
-
-def get_user_message():
-    user_problem = input("你遇到了什么法律问题?\n请输入：")
-    return user_problem
-
-
-# Set up everything here
-def machine_set_up():
-    setup_jieba()
-    # if two dictionaries are different
-    if exists("Dictionaries/Keyword_notebook") and exists("Dictionaries/Sorted_Dictionary"):
-        if not filecmp.cmp("Dictionaries/Keyword_notebook", "Dictionaries/Sorted_Dictionary"):
-            sort_file_by_pinyin("Dictionaries/Keyword_notebook", "Dictionaries/Sorted_Dictionary")
-        dictionary_setup("Dictionaries/Sorted_Dictionary")
-    else:
-        print("未检测到关键词词典，请把txt格式的词典放入文件夹内。")
-
+#AI Configuration
+intent_file = "Language_Data/Law_Data.json"
+intents = "law_database"
+tags = "law_type"
+patterns = "law_keywords"
 
 def main(start_var):
-    # machine_set_up()
-    # test_search_keyword()
-    # test_in_dictionary()
-    # message_text = "猫猫太可爱怎么办，可以偷吗？会不会要赔猫，怎么赔？" #get_user_message()
-    # corrected_text = make_correction(message_text)
-    # split_list = fen_ci(corrected_text, True)
-    # print(split_list)
-    # add_to_dictionary(split_list[0], "Dictionaries/Keyword_notebook")
-    # key_list = []
-    # with open("Dictionaries/Sorted_Dictionary", "r", encoding="utf-8") as f:
-    #     for line in f:
-    #         key_list.append(line.strip())
-    #
-    # print(key_list)
-    print(difflib.SequenceMatcher(None, "我想测试B组", "您好，现在已探测到A组测试，希望正确。").quick_ratio())
-    print(difflib.SequenceMatcher(None, "我想测试B组", "您好，现在已探测到B组测试，希望正确。").quick_ratio())
-
+    aiyu = Aiyu.Aiyu(training_set, output_data, words, labels, docs_x, docs_y, model, intent_file, intents, tags, patterns)
+    aiyu.data_processor()
+    aiyu.train_model(12, 12, 120)
+    aiyu.chat()
     return 0
 
 

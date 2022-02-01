@@ -1,18 +1,11 @@
 import numpy as np
-import AI_bot
-import tensorflow
 import discord
-import random
 import json
 import nltk
-import numpy
 import tflearn
-import jieba
 import AI_StateMachine
 from nltk.stem.lancaster import \
     LancasterStemmer  # Used to analyze words from the sentence (getting the root of the word --> only for English)
-from stopwordsiso import stopwords
-from Tools import data_modification
 from Tools import support_fnc
 
 # Global Variables
@@ -198,17 +191,12 @@ class chatbotAIYU(discord.Client):
                     if tg['tag'] == tag:
                         responses = tg['responses']
                         resp_list.extend(responses)
-                bot_respond = responses[AI_bot.get_max_similarity_percentage(inp, resp_list)]
+                bot_respond = responses[support_fnc.get_max_similarity_percentage(inp, resp_list)]
                 await message.channel.send(bot_respond.format(message))
-                # for tg in data["intents"]:
-                #     if tg['tag'] == tag:
-                #         responses = tg['responses']
-                #         bot_response = random.choice(responses)
-                #         await message.channel.send(bot_response.format(message))
             else:
                 await message.channel.send("I didnt get that. Can you explain or try again.".format(message))
 
 
 client = chatbotAIYU()
 # STARTING POINT
-client.run('OTM3MjI3NTUwNzIyMjQ4NzI0.YfYrLA.rv1Ba4hJG1nxfmJ4TIoN6iknyJc')
+client.run('OTM3MjI3NTUwNzIyMjQ4NzI0.YfYrLA.HQn-_mDuyBiVhDBUaVgv3ug9hrY')
