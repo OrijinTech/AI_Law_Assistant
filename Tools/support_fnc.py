@@ -50,21 +50,31 @@ def get_max_similarity_percentage(sentence, list_of_resp):
 
 # SETUP for Chinese sentence processing
 def bag_of_words_ch(s, words):
+    # # print("Inside bag_of_words_chinese function.")
+    # stop_words = set(stopwords(["zh"]))
+    # bag_chinese = [0 for _ in range(len(words))]
+    # s_words = jieba.cut(s, cut_all=False)
+    # # stopwords filtration
+    # s_words_filtered = []
+    # for w in s_words:
+    #     if w not in stop_words:
+    #         s_words_filtered.append(w)
+    # # unicode_s_words_filtered = [i.decode('utf-8') for i in s_words_filtered]
+    # for se in s_words_filtered:
+    #     for i, w in enumerate(words):
+    #         if w == se:
+    #             bag_chinese[i] = 1
+    # return np.array(bag_chinese)
     # print("Inside bag_of_words_chinese function.")
-    stop_words = set(stopwords(["zh"]))
+
     bag_chinese = [0 for _ in range(len(words))]
     s_words = jieba.cut(s, cut_all=False)
-    # stopwords filtration
-    s_words_filtered = []
-    for w in s_words:
-        if w not in stop_words:
-            s_words_filtered.append(w)
-    # unicode_s_words_filtered = [i.decode('utf-8') for i in s_words_filtered]
-    for se in s_words_filtered:
+    s_words = list(s_words)
+    for se in s_words:
         for i, w in enumerate(words):
             if w == se:
                 bag_chinese[i] = 1
-        return np.array(bag_chinese)
+    return np.array(bag_chinese)
 
 
 def bag_of_words_en(s, words):
@@ -103,8 +113,8 @@ def report_intent(results, results_index, intent_type):
 def split_sentence(sentence, language):
     tokenized_list_of_words = []
     if language == "ch":
-        if len(sentence) > 5:
-            sentence = word_filter_rem(sentence, "您好")
+        # if len(sentence) > 5:
+        #     sentence = word_filter_rem(sentence, "您好")
         sentence_cut = jieba.cut(sentence, cut_all=False)
         tokenized_list_of_words = list(sentence_cut)
     elif language == "en":

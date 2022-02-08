@@ -44,8 +44,9 @@ class Aiyu:
                     self.labels.append(intent[self.tags])
         # prepare data for model training
         stemmer = LancasterStemmer()
-        self.words = [stemmer.stem(w.lower()) for w in self.words if w not in "?"]  # convert words into lower case
-        # words = sorted(list(set(words)))  # sort and remove duplicates
+        if self.language == "en":
+            self.words = [stemmer.stem(w.lower()) for w in self.words if w not in "?"]  # convert words into lower case
+        self.words = sorted(list(self.words))  # sort and remove duplicates
         self.labels = sorted(self.labels)
         labels = self.labels
         out_empty = [0 for _ in range(len(labels))]
@@ -61,36 +62,19 @@ class Aiyu:
             output_row[labels.index(self.docs_y[x])] = 1
             self.training.append(bag)
             self.output.append(output_row)
+        # print(self.training)
         self.training = np.array(self.training)
         self.output = np.array(self.output)
         print("Finished processing data.")
 
-    # def train_model(self, num_neurons, batchsize, epoch_num):
-    #     print("Training the best model.")
-    #     training_data = self.training
-    #     output_data = self.output
-    #     # Input Layer
-    #     net = tflearn.input_data(shape=[None, len(self.training[0])])
-    #     # Hidden Layers
-    #     net = tflearn.fully_connected(net, num_neurons)
-    #     net = tflearn.fully_connected(net, num_neurons)
-    #     net = tflearn.fully_connected(net, num_neurons)
-    #     # Output Layer
-    #     net = tflearn.fully_connected(net, len(output_data[0]), activation="softmax")
-    #     # Model
-    #     net = tflearn.regression(net)
-    #     model = tflearn.DNN(net)
-    #     print("Starting fitting")
-    #     model.fit(training_data, output_data, n_epoch=epoch_num, batch_size=batchsize,
-    #               show_metric=True)  # show_metric=True if you want training report
-    #     self.model = model
-
-    def train_model_en(self, num_neurons, batchsize, epoch_num):
+    def train_model(self, num_neurons, batchsize, epoch_num):
+        print("Training the best model.")
         training_data = self.training
         output_data = self.output
         # Input Layer
-        net = tflearn.input_data(shape=[None, len(training_data[0])])
+        net = tflearn.input_data(shape=[None, len(self.training[0])])
         # Hidden Layers
+        #for layer in range(num_layer):
         net = tflearn.fully_connected(net, num_neurons)
         net = tflearn.fully_connected(net, num_neurons)
         # Output Layer
@@ -111,36 +95,36 @@ class Aiyu:
             if initial_state == AI_StateMachine.States.CHAT:
                 print("AIYU: 您好, 我是普法小助手AIYU, 有什么可以帮助您的吗？（输入 quit 来结束对话）")
                 while True:
-                    inp = input("您： ")
-                    if inp.lower() == "quit":
-                        initial_state = AI_StateMachine.States.QUIT
-                        break
-                    results = self.model.predict([support_fnc.bag_of_words_ch(inp, self.words)])[0]  # Chinese Version
-                    print(results)
-                    results_index = numpy.argmax(results)
-                    law_type = self.labels[results_index]
-                    print(support_fnc.report_intent(results, results_index, law_type)) #report the percentage of the resulted type
-                    if results[results_index] > 0.7:  # probability threshold
-                        resp_list = []
-                        for tg in support_fnc.open_file(self.intent_file, "N")[self.intents]:
-                            if tg['law_type'] == law_type:
-                                responses = tg['responses']
-                                resp_list.extend(responses)
-                                print("助手YU: ", responses[support_fnc.get_max_similarity_percentage(inp, resp_list)])
-                    else:
-                        print("助手YU: ", "对不起，AIYU不知道您在说什么，如果想让Yu学习新东西的话请按”Y“. \n您也可以继续问答，继续问题请按”N“.")
-                        maint_input = input("请输入Y/N: ")
-                        if maint_input == "Y":
+                    print("您: ")
+                    inp = input()
+                    if len(inp) > 0:
+                        if inp.lower() == "quit":
+                            initial_state = AI_StateMachine.States.QUIT
+                            break
+                        results = self.model.predict([support_fnc.bag_of_words_ch(inp, self.words)])[0]  # Chinese Version
+                        results_index = numpy.argmax(results)
+                        law_type = self.labels[results_index]
+                        if results[results_index] > 0.7:  # probability threshold
+                            resp_list = []
+                            for tg in support_fnc.open_file(self.intent_file, "N")[self.intents]:
+                                if tg['law_type'] == law_type:
+                                    responses = tg['responses']
+                                    resp_list.extend(responses)
+                                    print("AIYU: ", responses[support_fnc.get_max_similarity_percentage(inp, resp_list)])
+                        else:
+                            print("AIYU: ", "对不起，AIYU不知道您在说什么，如果想让Yu学习新东西的话请按”Y“. \n您也可以继续问答，继续问题请按”N“.")
+                            maint_input = input("请输入Y/N: ")
+                            if maint_input == "Y":
+                                initial_state = AI_StateMachine.States.LEARN
+                                break
+                        if law_type == "学习模式":
                             initial_state = AI_StateMachine.States.LEARN
                             break
-                    if law_type == "学习模式":
-                        initial_state = AI_StateMachine.States.LEARN
-                        break
             # Learn State
             if initial_state == AI_StateMachine.States.LEARN:
                 while True:
                     learn_pattern = input("AIYU: 请输入您要我学习的文献：")
-                    print("助手YU: 这是哪种法律种类？")
+                    print("AIYU: 这是哪种法律种类？")
                     learn_type = input("您： ")
                     if learn_type in self.docs_y:
                         support_fnc.add_pattern(learn_pattern, learn_type)

@@ -29,13 +29,11 @@
          "responses": ["ALL FATHER GIVE ME SIGHT!"],
          "context_set": ""
         },
-
         {"tag": "learn",
          "patterns": ["can you learn it?", "learn it?", "please learn this", "answer it next time please"],
          "responses": ["I am so sorry, I will learn it for the next time QAQ."],
          "context_set": ""
         },
-
         {"tag": "unknown",
          "patterns": ["Where are my keys to the room?", "Can you fly?", "Why cannot I get 4.0 GPA?", "Bad grades?"],
          "responses": ["I am sorry, I yet cannot respond to that question.", "Yongxiang would be mad if I give him my honest response Q^Q", "I don't think I can help you with that."],
