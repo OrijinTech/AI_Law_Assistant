@@ -1,8 +1,7 @@
-{
-  "law_database": [
+{"intents": [
     {
-      "law_type": "婚姻家事",
-      "law_keywords": [
+      "category": "婚姻家事",
+      "patterns": [
         "QQ空间",
         "QQ号",
         "暧昧期间",
@@ -82,8 +81,8 @@
       "context_set": ""
     },
     {
-      "law_type": "收养问题",
-      "law_keywords": [
+      "category": "收养问题",
+      "patterns": [
         "16周岁",
         "爸爸",
         "保管",
@@ -126,8 +125,8 @@
       "context_set": ""
     },
     {
-      "law_type": "继承问题",
-      "law_keywords": [
+      "category": "继承问题",
+      "patterns": [
         "财产",
         "财产分割",
         "财产公证",
@@ -157,8 +156,8 @@
       "context_set": ""
     },
     {
-      "law_type": "交通事故",
-      "law_keywords": [
+      "category": "交通事故",
+      "patterns": [
         "车",
         "保险",
         "爆炸",
@@ -262,8 +261,8 @@
       "context_set": ""
     },
     {
-      "law_type": "民间借贷",
-      "law_keywords": [
+      "category": "民间借贷",
+      "patterns": [
         "保险",
         "报酬",
         "被骗",
@@ -325,8 +324,8 @@
       "context_set": ""
     },
     {
-      "law_type": "劳动纠纷",
-      "law_keywords": [
+      "category": "劳动纠纷",
+      "patterns": [
         "按劳分配",
         "报酬",
         "不发工资",
@@ -398,8 +397,8 @@
       "context_set": ""
     },
     {
-      "law_type": "商品房买卖纠纷",
-      "law_keywords": [
+      "category": "商品房买卖纠纷",
+      "patterns": [
         "保险",
         "拆迁",
         "拆迁户",
@@ -434,8 +433,8 @@
       "context_set": ""
     },
     {
-      "law_type": "二手房买卖纠纷",
-      "law_keywords": [
+      "category": "二手房买卖纠纷",
+      "patterns": [
         "房子",
         "房产",
         "房贷",
@@ -457,8 +456,8 @@
       "context_set": ""
     },
     {
-      "law_type": "房屋租赁",
-      "law_keywords": [
+      "category": "房屋租赁",
+      "patterns": [
         "承租人",
         "出租",
         "电费",
@@ -486,8 +485,8 @@
       "context_set": ""
     },
     {
-      "law_type": "物业纠纷",
-      "law_keywords": [
+      "category": "物业纠纷",
+      "patterns": [
         "插队",
         "吵架",
         "丢了",
@@ -512,8 +511,8 @@
       "context_set": ""
     },
     {
-      "law_type": "产品质量",
-      "law_keywords": [
+      "category": "产品质量",
+      "patterns": [
         "盗版",
         "店铺",
         "耳机",
@@ -573,8 +572,8 @@
       "context_set": ""
     },
     {
-      "law_type": "食品安全",
-      "law_keywords": [
+      "category": "食品安全",
+      "patterns": [
         "包子",
         "餐厅",
         "餐馆",
@@ -647,8 +646,8 @@
       "context_set": ""
     },
     {
-      "law_type": "电商纠纷",
-      "law_keywords": [
+      "category": "电商纠纷",
+      "patterns": [
         "APP",
         "QQ空间",
         "QQ号",
@@ -738,8 +737,8 @@
       "context_set": ""
     },
     {
-      "law_type": "医患纠纷",
-      "law_keywords": [
+      "category": "医患纠纷",
+      "patterns": [
         "安全防护",
         "白血病",
         "车祸",
@@ -815,8 +814,8 @@
       "context_set": ""
     },
     {
-      "law_type": "雇佣侵权",
-      "law_keywords": [
+      "category": "雇佣侵权",
+      "patterns": [
         "按劳分配",
         "版权",
         "报酬",
@@ -927,8 +926,8 @@
       "context_set": ""
     },
     {
-      "law_type": "校园侵权",
-      "law_keywords": [
+      "category": "校园侵权",
+      "patterns": [
         "KTV P图",
         "QQ空间",
         "QQ号",
@@ -1018,8 +1017,8 @@
       "context_set": ""
     },
     {
-      "law_type": "旅游纠纷",
-      "law_keywords": [
+      "category": "旅游纠纷",
+      "patterns": [
         "被盗",
         "被骗",
         "被偷",
@@ -1095,8 +1094,8 @@
       "context_set": ""
     },
     {
-      "law_type": "动物侵权",
-      "law_keywords": [
+      "category": "动物侵权",
+      "patterns": [
         "藏羚羊",
         "虫子",
         "宠物",
@@ -1154,8 +1153,8 @@
       "context_set": ""
     },
     {
-      "law_type": "打招呼",
-      "law_keywords": [
+      "category": "打招呼",
+      "patterns": [
         "在吗",
         "我需要帮助",
         "嗨，在吗",
@@ -1201,8 +1200,8 @@
       "context_set": ""
     },
     {
-      "law_type": "学习模式",
-      "law_keywords": [
+      "category": "学习模式",
+      "patterns": [
         "修改",
         "改一下",
         "改",
@@ -1225,8 +1224,8 @@
       "context_set": ""
     },
     {
-      "law_type": "测试数据",
-      "law_keywords": [
+      "category": "测试数据",
+      "patterns": [
         "这次是A组测试，请回答：一探测到A组测试",
         "这次是B组测试，请回答：一探测到B组测试",
         "这次是C组测试，请回答：一探测到C组测试",

@@ -8,9 +8,9 @@ from Tools import support_fnc
 
 
 class Aiyu:
-
+    # Constructor
     def __init__(self, training_set, output_data, words, labels, docs_x, docs_y, ai_model,
-                 intent_file, intents, tags, patterns, response_list, language):
+                 intent_file, intents, tags, patterns, response_list, language, state):
         self.training = list(training_set)
         self.output = list(output_data)
         self.words = list(words)
@@ -24,6 +24,7 @@ class Aiyu:
         self.patterns = patterns
         self.response_list = response_list
         self.language = language
+        self.state = state
 
     def data_processor(self):
         print("Processing data for model training.")
@@ -66,7 +67,7 @@ class Aiyu:
         self.output = np.array(self.output)
         print("Finished processing data.")
 
-    def train_model(self, num_neurons, batchsize, epoch_num):
+    def train_model(self, num_neurons, batch_size, epoch_num):
         print("Training the best model.")
         training_data = self.training
         output_data = self.output
@@ -82,60 +83,59 @@ class Aiyu:
         net = tflearn.regression(net)
         model = tflearn.DNN(net)
         print("Starting fitting")
-        model.fit(training_data, output_data, n_epoch=epoch_num, batch_size=batchsize,
+        model.fit(training_data, output_data, n_epoch=epoch_num, batch_size=batch_size,
                   show_metric=True)  # show_metric=True if you want training report
         self.model = model
 
+    def pick_response(self, inp, results, results_index, conversation_type, labels):
+        if results[results_index] > 0.7:  # probability threshold
+            resp_list = []
+            for tg in support_fnc.open_file(self.intent_file, "N")[self.intents]:
+                if tg[self.tags] == conversation_type:
+                    responses = tg[self.response_list]
+                    resp_list.extend(responses)
+                    if conversation_type == "时间":
+                        print("AIYU: ", responses[support_fnc.get_max_similarity_percentage(inp, resp_list)], support_fnc.get_current_time())
+                    elif conversation_type == "学习模式":
+                        self.state = AI_StateMachine.States.LEARN
+                        print("AIYU: ", responses[support_fnc.get_max_similarity_percentage(inp, resp_list)])
+                    else:
+                        print("AIYU: ", responses[support_fnc.get_max_similarity_percentage(inp, resp_list)])
+        else:
+            print("AIYU: 对不起，AIYU没听懂 T_T。")
+
+
     def chat(self):
-        initial_state = AI_StateMachine.States.CHAT
+        self.state = AI_StateMachine.States.CHAT
         support_fnc.clear_chat()
         round_count = 0
         while True:
             # Chat State
-            if initial_state == AI_StateMachine.States.CHAT:
-                print("AIYU: 您好, 我是普法小助手AIYU, 有什么可以帮助您的吗？（输入 quit 来结束对话）")
-                while True:
-                    inp = support_fnc.get_user_input(round_count)
-                    if inp.lower() == "quit":
-                        initial_state = AI_StateMachine.States.QUIT
-                        break
-                    results = self.model.predict([support_fnc.bag_of_words(inp, self.words, self.language)])[0]  # Chinese Version
-                    results_index = numpy.argmax(results)
-                    conversation_type = self.labels[results_index]
-                    support_fnc.report_train_results(results, results_index, conversation_type, self.labels) # Report Results
-                    if results[results_index] > 0.7:  # probability threshold
-                        resp_list = []
-                        for tg in support_fnc.open_file(self.intent_file, "N")[self.intents]:
-                            if tg[self.tags] == conversation_type:
-                                responses = tg[self.response_list]
-                                resp_list.extend(responses)
-                                print("AIYU: ", responses[support_fnc.get_max_similarity_percentage(inp, resp_list)])
-                                round_count += 1
-                    else:
-                        print("AIYU: ", "对不起，AIYU不知道您在说什么，如果想让Yu学习新东西的话请按”Y“. \n您也可以继续问答，继续问题请按”N“.")
-                        maint_input = input("请输入Y/N: ")
-                        if maint_input == "Y":
-                            initial_state = AI_StateMachine.States.LEARN
-                            round_count += 1
-                            break
-                    if conversation_type == "学习模式":
-                        initial_state = AI_StateMachine.States.LEARN
-                        round_count += 1
-                        break
+            if self.state == AI_StateMachine.States.CHAT:
+                inp = support_fnc.get_user_input(round_count)
+                if inp.lower() == "quit":
+                    self.state = AI_StateMachine.States.QUIT
+                    break
+                results = self.model.predict([support_fnc.bag_of_words(inp, self.words, self.language)])[0]  # Chinese Version
+                results_index = numpy.argmax(results)
+                conversation_type = self.labels[results_index]
+                support_fnc.report_train_results(results, results_index, conversation_type, self.labels) # Report Results
+                self.pick_response(inp, results, results_index, conversation_type, self.labels)
+                round_count += 1
             # Learn State
-            if initial_state == AI_StateMachine.States.LEARN:
+            if self.state == AI_StateMachine.States.LEARN:
                 while True:
                     learn_pattern = input("AIYU: 请输入您要我学习的文献：")
                     print("AIYU: 这是关于什么的对话？")
                     learn_type = input("您： ")
                     if learn_type in self.docs_y:
-                        support_fnc.add_pattern(learn_pattern, learn_type)
+                        support_fnc.add_pattern(self.intent_file, self.intents, self.tags, self.patterns, learn_pattern, learn_type)
                     keep_learn = input("AIYU: 还有其他要我学习的吗？(Y/N)： ")
                     if keep_learn == "N":
-                        initial_state = AI_StateMachine.States.CHAT
+                        self.state = AI_StateMachine.States.CHAT
                         round_count += 1
                         break
             # Quit the program
-            if initial_state == AI_StateMachine.States.QUIT:
+            if self.state == AI_StateMachine.States.QUIT:
                 break
 

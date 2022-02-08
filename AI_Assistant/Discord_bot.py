@@ -48,5 +48,5 @@ class chatbotAIYU(discord.Client):
 
 client = chatbotAIYU()
 # STARTING POINT
-ai_token = ""
+ai_token = "OTM3MjI3NTUwNzIyMjQ4NzI0.YfYrLA.vTKwBSl7VKe952lP3ZRauVFq8oE"
 client.run(ai_token)

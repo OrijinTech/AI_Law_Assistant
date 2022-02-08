@@ -5,7 +5,8 @@ import nltk
 import numpy as np
 import pycorrector
 from nltk import LancasterStemmer
-from stopwordsiso import stopwords
+from datetime import datetime
+from stopwordsiso import stopwords # Might use later
 
 
 def cont_num(keyword) -> bool:
@@ -58,7 +59,6 @@ def bag_of_words(s, words, language):
     return np.array(bag_chinese)
 
 
-# return a sentence with the specific word filtered out
 def word_filter_rem(sentence, word):
     word_list = jieba.cut(sentence)
     updated_sent = ""
@@ -99,15 +99,15 @@ def split_sentence(sentence, language):
     return tokenized_list_of_words
 
 
-def add_pattern(sentence, law_type):
-    with open("D:\AI_Law_Assistant\Language_Data\Law_Data.json", "r", encoding="utf8") as file:
+def add_pattern(intent_file, intents, tags, pattern, sentence, learn_type):
+    with open(intent_file, "r", encoding="utf8") as file:
         # returning the Json object
         data = json.load(file)
-        for intent in data["law_database"]:
+        for intent in data[intents]:
             # For each pattern inside each intent, we want to tokenize the words that are in sentences.
-            if intent["law_type"] == law_type:
-                intent["law_keywords"].append(sentence)
-    with open("D:\AI_Law_Assistant\Language_Data\Law_Data.json", "w", encoding="utf8") as file:
+            if intent[tags] == learn_type:
+                intent[pattern].append(sentence)
+    with open(intent_file, "w", encoding="utf8") as file:
         json.dump(data, file, ensure_ascii=False, indent=2)
 
 
@@ -128,11 +128,18 @@ def get_user_input(rd_count):
     global inp
     try:
         if rd_count == 0:
+            print("AIYU: 您好, 我是普法小助手AIYU, 有什么可以帮助您的吗？（输入 quit 来结束对话）")
             inp = input("请开始和AIYU的对话: ")
             inp.replace("请开始和AIYU的对话: ", "")
         else:
             inp = input("您: ")
             inp.replace("您: ", "")
     except IOError:
-        print("AIYU没有听懂, 请重新输入")
+        print("AIYU: 对不起，AIYU没听懂 T_T。")
     return inp
+
+
+def get_current_time():
+    curr_time = datetime.now()
+    curr_time_format = curr_time.strftime("%H:%M:%S")
+    return curr_time_format
