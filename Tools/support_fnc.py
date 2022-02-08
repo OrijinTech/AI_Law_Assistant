@@ -47,34 +47,15 @@ def get_max_similarity_percentage(sentence, list_of_resp):
     return responses_prob.index(max_prob)
 
 
-def bag_of_words_ch(s, words):
-    # print("Inside bag_of_words_chinese function.")
-    stop_words = set(stopwords(["zh"]))
+def bag_of_words(s, words, language):
     bag_chinese = [0 for _ in range(len(words))]
-    s_words = jieba.cut(s, cut_all=False)
-    # stopwords filtration
-    s_words_filtered = []
-    for w in s_words:
-        if w not in stop_words:
-            s_words_filtered.append(w)
-    # unicode_s_words_filtered = [i.decode('utf-8') for i in s_words_filtered]
-    for se in s_words_filtered:
+    s_words = split_sentence(s, language)
+    words_list = list(s_words)
+    for se in words_list:
         for i, w in enumerate(words):
             if w == se:
                 bag_chinese[i] = 1
     return np.array(bag_chinese)
-
-
-def bag_of_words_en(s, words):
-    stemmer = LancasterStemmer()
-    bag = [0 for _ in range(len(words))]
-    s_words = nltk.word_tokenize(s)
-    s_words = [stemmer.stem(word.lower()) for word in s_words]
-    for se in s_words:
-        for i, w in enumerate(words):
-            if w == se:
-                bag[i] = 1
-    return np.array(bag)
 
 
 # return a sentence with the specific word filtered out
@@ -89,10 +70,11 @@ def word_filter_rem(sentence, word):
     return updated_sent
 
 
-def report_train_results(results, results_index, intent_type):
+def report_train_results(results, results_index, intent_type, labels):
     result_percentage = round(results[results_index] * 100, 2)
     print("---------REPORTING RESULTS---------"
           "\nProbabilities of Types:", "\n", results,
+          "\nCategories:", "\n", labels,
           "\nIndex of the Type with Largest Probability:", results_index,
           "\nIndex of the Resulted Type:", intent_type,
           "\nProbability of the Type:", result_percentage, "%")
@@ -104,7 +86,9 @@ def split_sentence(sentence, language):
         sentence_cut = jieba.cut(sentence, cut_all=False)
         tokenized_list_of_words = list(sentence_cut)
     elif language == "en":
+        stemmer = LancasterStemmer()
         tokenized_list_of_words = nltk.word_tokenize(sentence)
+        tokenized_list_of_words = [stemmer.stem(word.lower()) for word in tokenized_list_of_words]
     else:
         if language != "en" or language != "ch":
             print("Cannot identify the correct language to split the sentence.")
@@ -141,7 +125,7 @@ def make_correction(message):
 
 
 def get_user_input(rd_count):
-    inp = ""
+    global inp
     try:
         if rd_count == 0:
             inp = input("请开始和AIYU的对话: ")

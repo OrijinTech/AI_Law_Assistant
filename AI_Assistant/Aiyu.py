@@ -99,10 +99,10 @@ class Aiyu:
                     if inp.lower() == "quit":
                         initial_state = AI_StateMachine.States.QUIT
                         break
-                    results = self.model.predict([support_fnc.bag_of_words_ch(inp, self.words)])[0]  # Chinese Version
+                    results = self.model.predict([support_fnc.bag_of_words(inp, self.words, self.language)])[0]  # Chinese Version
                     results_index = numpy.argmax(results)
                     conversation_type = self.labels[results_index]
-                    # support_fnc.report_train_results(results, results_index, conversation_type) # Report Results
+                    support_fnc.report_train_results(results, results_index, conversation_type, self.labels) # Report Results
                     if results[results_index] > 0.7:  # probability threshold
                         resp_list = []
                         for tg in support_fnc.open_file(self.intent_file, "N")[self.intents]:
@@ -110,29 +110,32 @@ class Aiyu:
                                 responses = tg[self.response_list]
                                 resp_list.extend(responses)
                                 print("AIYU: ", responses[support_fnc.get_max_similarity_percentage(inp, resp_list)])
+                                round_count += 1
                     else:
                         print("AIYU: ", "对不起，AIYU不知道您在说什么，如果想让Yu学习新东西的话请按”Y“. \n您也可以继续问答，继续问题请按”N“.")
                         maint_input = input("请输入Y/N: ")
                         if maint_input == "Y":
                             initial_state = AI_StateMachine.States.LEARN
+                            round_count += 1
                             break
                     if conversation_type == "学习模式":
                         initial_state = AI_StateMachine.States.LEARN
+                        round_count += 1
                         break
             # Learn State
             if initial_state == AI_StateMachine.States.LEARN:
                 while True:
                     learn_pattern = input("AIYU: 请输入您要我学习的文献：")
-                    print("AIYU: 这是哪种法律种类？")
+                    print("AIYU: 这是关于什么的对话？")
                     learn_type = input("您： ")
                     if learn_type in self.docs_y:
                         support_fnc.add_pattern(learn_pattern, learn_type)
                     keep_learn = input("AIYU: 还有其他要我学习的吗？(Y/N)： ")
                     if keep_learn == "N":
                         initial_state = AI_StateMachine.States.CHAT
+                        round_count += 1
                         break
             # Quit the program
             if initial_state == AI_StateMachine.States.QUIT:
                 break
-            round_count += 1
 

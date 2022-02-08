@@ -7,7 +7,7 @@ from Tools import support_fnc
 
 # Creating Lists
 
-discord_bot = Aiyu.Aiyu(main.training_set, main.output_data, main.words, main.labels, main.docs_x, main.docs_y, main.model, main.intent_file, main.intents, main.tags, main.patterns, main.language)
+discord_bot = Aiyu.Aiyu(main.training_set, main.output_data, main.words, main.labels, main.docs_x, main.docs_y, main.model, main.intent_file, main.intents, main.tags, main.patterns, main.response_list, main.language)
 discord_bot.data_processor()
 discord_bot.train_model(8, 8, 500)
 
@@ -31,7 +31,7 @@ class chatbotAIYU(discord.Client):
 
         else:
             inp = message.content
-            result = discord_bot.model.predict([support_fnc.bag_of_words_en(inp, discord_bot.words)])[0]
+            result = discord_bot.model.predict([support_fnc.bag_of_words(inp, discord_bot.words, discord_bot.language)])[0]
             result_index = np.argmax(result)
             tag = discord_bot.labels[result_index]
             if result[result_index] > 0.7:
@@ -43,10 +43,10 @@ class chatbotAIYU(discord.Client):
                 bot_respond = responses[support_fnc.get_max_similarity_percentage(inp, resp_list)]
                 await message.channel.send(bot_respond.format(message))
             else:
-                await message.channel.send("I didnt get that. Can you explain or try again.".format(message))
+                await message.channel.send("我听不太懂啊, 能再重复一下吗".format(message))
 
 
 client = chatbotAIYU()
 # STARTING POINT
-ai_token = ""
+ai_token = "OTM3MjI3NTUwNzIyMjQ4NzI0.YfYrLA.ZGc-Y1oejJg7wrq3j_gD8h5XJrk"
 client.run(ai_token)

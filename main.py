@@ -32,7 +32,7 @@ def main(start_var):
     aiyu = Aiyu.Aiyu(training_set, output_data, words, labels, docs_x, docs_y, model, intent_file, intents, tags,
                      patterns, response_list, language)
     aiyu.data_processor()
-    aiyu.train_model(8, 8, 120)
+    aiyu.train_model(16, 8, 120)
     aiyu.chat()
     return 0
 
