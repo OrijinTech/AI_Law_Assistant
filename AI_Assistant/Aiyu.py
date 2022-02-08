@@ -1,5 +1,3 @@
-import jieba
-import nltk
 import numpy as np
 import numpy
 import tflearn
@@ -12,7 +10,7 @@ from Tools import support_fnc
 class Aiyu:
 
     def __init__(self, training_set, output_data, words, labels, docs_x, docs_y, ai_model,
-                 intent_file, intents, tags, patterns, language):
+                 intent_file, intents, tags, patterns, response_list, language):
         self.training = list(training_set)
         self.output = list(output_data)
         self.words = list(words)
@@ -21,9 +19,10 @@ class Aiyu:
         self.docs_y = list(docs_y)
         self.model = ai_model
         self.intent_file = intent_file
-        self.intents = intents  # str
-        self.tags = tags  # str
-        self.patterns = patterns  # str
+        self.intents = intents
+        self.tags = tags
+        self.patterns = patterns
+        self.response_list = response_list
         self.language = language
 
     def data_processor(self):
@@ -74,7 +73,7 @@ class Aiyu:
         # Input Layer
         net = tflearn.input_data(shape=[None, len(self.training[0])])
         # Hidden Layers
-        #for layer in range(num_layer):
+        # for layer in range(num_layer):
         net = tflearn.fully_connected(net, num_neurons)
         net = tflearn.fully_connected(net, num_neurons)
         # Output Layer
@@ -90,36 +89,36 @@ class Aiyu:
     def chat(self):
         initial_state = AI_StateMachine.States.CHAT
         support_fnc.clear_chat()
+        round_count = 0
         while True:
             # Chat State
             if initial_state == AI_StateMachine.States.CHAT:
                 print("AIYU: 您好, 我是普法小助手AIYU, 有什么可以帮助您的吗？（输入 quit 来结束对话）")
                 while True:
-                    print("您: ")
-                    inp = input()
-                    if len(inp) > 0:
-                        if inp.lower() == "quit":
-                            initial_state = AI_StateMachine.States.QUIT
-                            break
-                        results = self.model.predict([support_fnc.bag_of_words_ch(inp, self.words)])[0]  # Chinese Version
-                        results_index = numpy.argmax(results)
-                        law_type = self.labels[results_index]
-                        if results[results_index] > 0.7:  # probability threshold
-                            resp_list = []
-                            for tg in support_fnc.open_file(self.intent_file, "N")[self.intents]:
-                                if tg['law_type'] == law_type:
-                                    responses = tg['responses']
-                                    resp_list.extend(responses)
-                                    print("AIYU: ", responses[support_fnc.get_max_similarity_percentage(inp, resp_list)])
-                        else:
-                            print("AIYU: ", "对不起，AIYU不知道您在说什么，如果想让Yu学习新东西的话请按”Y“. \n您也可以继续问答，继续问题请按”N“.")
-                            maint_input = input("请输入Y/N: ")
-                            if maint_input == "Y":
-                                initial_state = AI_StateMachine.States.LEARN
-                                break
-                        if law_type == "学习模式":
+                    inp = support_fnc.get_user_input(round_count)
+                    if inp.lower() == "quit":
+                        initial_state = AI_StateMachine.States.QUIT
+                        break
+                    results = self.model.predict([support_fnc.bag_of_words_ch(inp, self.words)])[0]  # Chinese Version
+                    results_index = numpy.argmax(results)
+                    conversation_type = self.labels[results_index]
+                    # support_fnc.report_train_results(results, results_index, conversation_type) # Report Results
+                    if results[results_index] > 0.7:  # probability threshold
+                        resp_list = []
+                        for tg in support_fnc.open_file(self.intent_file, "N")[self.intents]:
+                            if tg[self.tags] == conversation_type:
+                                responses = tg[self.response_list]
+                                resp_list.extend(responses)
+                                print("AIYU: ", responses[support_fnc.get_max_similarity_percentage(inp, resp_list)])
+                    else:
+                        print("AIYU: ", "对不起，AIYU不知道您在说什么，如果想让Yu学习新东西的话请按”Y“. \n您也可以继续问答，继续问题请按”N“.")
+                        maint_input = input("请输入Y/N: ")
+                        if maint_input == "Y":
                             initial_state = AI_StateMachine.States.LEARN
                             break
+                    if conversation_type == "学习模式":
+                        initial_state = AI_StateMachine.States.LEARN
+                        break
             # Learn State
             if initial_state == AI_StateMachine.States.LEARN:
                 while True:
@@ -135,4 +134,5 @@ class Aiyu:
             # Quit the program
             if initial_state == AI_StateMachine.States.QUIT:
                 break
+            round_count += 1
 
