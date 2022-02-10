@@ -1,6 +1,7 @@
 import sys
 from AI_Assistant import Aiyu
 from AI_Assistant import AI_StateMachine
+import jieba
 
 # Creating Lists
 training_set = []
@@ -13,8 +14,11 @@ model = None
 
 # AI Configuration for Law Popularization Project
 # intent_file = "Language_Data/Law_Data.json" # 普法数据
-# intent_file = "../Language_Data/intents.json" 英文版社交机器人
-intent_file = "Language_Data/temp.json"  # 中文版社交机器人
+# intent_file = "Language_Data/intents.json" # 英文版社交机器人
+# intent_file = "Language_Data/personalAI.json"  # 中文版社交机器人
+# intent_file = "../Language_Data/personalAI.json"  # 中文版社交机器人(Discord私人版)
+# intent_file = "../Language_Data/publicAI.json"  # 中文版社交机器人(Discord版)
+intent_file = "../Language_Data/Law_Data.json" # 普法AI(Discord版)
 intents = "intents"
 tags = "category"
 patterns = "patterns"

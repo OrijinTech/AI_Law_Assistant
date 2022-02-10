@@ -6,7 +6,7 @@ import numpy as np
 import pycorrector
 from nltk import LancasterStemmer
 from datetime import datetime
-from stopwordsiso import stopwords # Might use later
+from stopwordsiso import stopwords  # Might use later
 
 
 def cont_num(keyword) -> bool:
@@ -128,7 +128,7 @@ def get_user_input(rd_count):
     global inp
     try:
         if rd_count == 0:
-            print("AIYU: 您好, 我是普法小助手AIYU, 有什么可以帮助您的吗？（输入 quit 来结束对话）")
+            print("AIYU: 您好, 我是巨聪明AIYU, 有什么可以帮助您的吗？")
             inp = input("请开始和AIYU的对话: ")
             inp.replace("请开始和AIYU的对话: ", "")
         else:
@@ -143,3 +143,12 @@ def get_current_time():
     curr_time = datetime.now()
     curr_time_format = curr_time.strftime("%H:%M:%S")
     return curr_time_format
+
+
+def get_ai_username(mode):
+    global username
+    if mode == "dev":
+        username = "AIYU: "
+    elif mode == "discord":
+        username = ""
+    return username
