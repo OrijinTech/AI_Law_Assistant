@@ -128,7 +128,7 @@ def get_user_input(rd_count):
     global inp
     try:
         if rd_count == 0:
-            print("AIYU: 您好, 我是巨聪明AIYU, 有什么可以帮助您的吗？")
+            print("AIYU: 您好, 我是AIYU, 有什么可以帮助您的吗？")
             inp = input("请开始和AIYU的对话: ")
             inp.replace("请开始和AIYU的对话: ", "")
         else:
@@ -152,3 +152,4 @@ def get_ai_username(mode):
     elif mode == "discord":
         username = ""
     return username
+

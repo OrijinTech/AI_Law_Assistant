@@ -2,6 +2,7 @@ import numpy as np
 import numpy
 import tflearn
 import discord
+import tensorflow
 from AI_Assistant import AI_StateMachine
 from nltk.stem.lancaster import \
     LancasterStemmer  # Used to analyze words from the sentence (getting the root of the word --> only for English)
@@ -26,6 +27,7 @@ class Aiyu:
         self.response_list = response_list
         self.language = language
         self.state = state
+
 
     def data_processor(self):
         print("Processing data for model training.")
@@ -68,6 +70,7 @@ class Aiyu:
         self.output = np.array(self.output)
         print("Finished processing data.")
 
+
     def train_model(self, num_neurons, batch_size, epoch_num):
         print("Training the best model.")
         training_data = self.training
@@ -88,6 +91,19 @@ class Aiyu:
                   show_metric=True)  # show_metric=True if you want training report
         self.model = model
 
+
+    # model name = model.tflearn
+    def save_model(self, model_name):
+        self.model.save(model_name)
+
+
+    def check_for_model(self, model_name):
+        try:
+            self.model.load(model_name)
+        except:
+            print("Model is not present, you need to train the model.")
+
+
     def pick_response(self, inp, results, results_index, conversation_type, labels, mode):
         global response_return
         if results[results_index] > 0.7:  # probability threshold
@@ -97,14 +113,21 @@ class Aiyu:
                     responses = tg[self.response_list]
                     resp_list.extend(responses)
                     if conversation_type == "时间":
-                        response_return = str(support_fnc.get_ai_username(mode)) + str(responses[support_fnc.get_max_similarity_percentage(inp, resp_list)]) + " " + str(support_fnc.get_current_time())
+                        response_return = str(support_fnc.get_ai_username(mode)) + str(
+                            responses[support_fnc.get_max_similarity_percentage(inp, resp_list)]) + " " + str(
+                            support_fnc.get_current_time())
                     elif conversation_type == "学习模式":
                         self.state = AI_StateMachine.States.LEARN
-                        response_return = str(support_fnc.get_ai_username(mode)) + str(responses[support_fnc.get_max_similarity_percentage(inp, resp_list)])
+                        response_return = str(support_fnc.get_ai_username(mode)) + str(
+                            responses[support_fnc.get_max_similarity_percentage(inp, resp_list)])
                     elif conversation_type == "爱好":
-                        response_return = str(support_fnc.get_ai_username(mode)) + str(responses[support_fnc.get_max_similarity_percentage(inp, resp_list)]) + "https://www.youtube.com/watch?v=dQw4w9WgXcQ&ab_channel=RickAstley"
+                        response_return = str(support_fnc.get_ai_username(mode)) + str(responses[
+                                                                                           support_fnc.get_max_similarity_percentage(
+                                                                                               inp,
+                                                                                               resp_list)]) + "https://www.youtube.com/watch?v=dQw4w9WgXcQ&ab_channel=RickAstley"
                     else:
-                        response_return = str(support_fnc.get_ai_username(mode)) + str(responses[support_fnc.get_max_similarity_percentage(inp, resp_list)])
+                        response_return = str(support_fnc.get_ai_username(mode)) + str(
+                            responses[support_fnc.get_max_similarity_percentage(inp, resp_list)])
         else:
             response_return = str(support_fnc.get_ai_username(mode)) + "对不起，AIYU没听懂 T_T。"
         return response_return
@@ -121,7 +144,8 @@ class Aiyu:
                 if inp.lower() == "quit":
                     self.state = AI_StateMachine.States.QUIT
                     break
-                results = self.model.predict([support_fnc.bag_of_words(inp, self.words, self.language)])[0]  # Chinese Version
+                results = self.model.predict([support_fnc.bag_of_words(inp, self.words, self.language)])[
+                    0]  # Chinese Version
                 results_index = numpy.argmax(results)
                 conversation_type = self.labels[results_index]
                 # support_fnc.report_train_results(results, results_index, conversation_type, self.labels) # Report Results
@@ -134,7 +158,8 @@ class Aiyu:
                     print("AIYU: 这是关于什么的对话？")
                     learn_type = input("您： ")
                     if learn_type in self.docs_y:
-                        support_fnc.add_pattern(self.intent_file, self.intents, self.tags, self.patterns, learn_pattern, learn_type)
+                        support_fnc.add_pattern(self.intent_file, self.intents, self.tags, self.patterns, learn_pattern,
+                                                learn_type)
                     keep_learn = input("AIYU: 还有其他要我学习的吗？(Y/N)： ")
                     if keep_learn == "N":
                         self.state = AI_StateMachine.States.CHAT
@@ -143,6 +168,7 @@ class Aiyu:
             # Quit the program
             if self.state == AI_StateMachine.States.QUIT:
                 break
+
 
     def chat_dc(self, message):
         inp = message.content
