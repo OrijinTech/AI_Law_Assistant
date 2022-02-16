@@ -13,11 +13,11 @@ docs_y = []
 model = None
 
 # AI MODEL TRAINING DATA SETS:
-# intent_file = "Language_Data/Law_Data.json" # 普法数据
+intent_file = "Language_Data/Law_Data.json" # 普法数据
 # intent_file = "Language_Data/intents.json" # 英文版社交机器人
 # intent_file = "Language_Data/personalAI.json"  # 中文版社交机器人
 # intent_file = "../Language_Data/personalAI.json"  # 中文版社交机器人(Discord私人版)
-intent_file = "../Language_Data/publicAI.json"  # 中文版社交机器人(Discord版)
+# intent_file = "../Language_Data/publicAI.json"  # 中文版社交机器人(Discord版)
 # intent_file = "../Language_Data/Law_Data.json" # 普法AI(Discord版)
 
 intents = "intents"
