@@ -1,0 +1,35 @@
+{"intents": [
+        {"category": "义务教育法",
+         "patterns": [],
+         "responses": ["已检测到《义务教育法》"],
+         "context_set": ""
+        },
+        {"category": "刑法",
+         "patterns": [],
+         "responses": ["已检测到《刑法》"],
+         "context_set": ""
+        },
+        {"category": "宪法",
+         "patterns": [],
+         "responses": ["已检测到《宪法》"],
+         "context_set": ""
+        },
+        {"category": "未成年保护法",
+         "patterns": [],
+         "responses": ["已检测到《未成年保护法》"],
+         "context_set": ""
+        },
+        {"category": "民法",
+         "patterns": [],
+         "responses": ["已检测到《民法》"],
+         "context_set": ""
+        },
+        {"category": "预防未成年犯罪法",
+         "patterns": [],
+         "responses": ["已检测到《预防未成年犯罪法》"],
+         "context_set": ""
+        }
+]
+}
+
+

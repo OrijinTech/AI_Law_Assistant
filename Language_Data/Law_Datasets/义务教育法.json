@@ -1,0 +1,43 @@
+{"intents": [
+        {"category": "总则",
+         "patterns": [],
+         "responses": ["已检测到《总则》"],
+         "context_set": ""
+        },
+        {"category": "学生",
+         "patterns": [],
+         "responses": ["已检测到《学生》"],
+         "context_set": ""
+        },
+        {"category": "学校",
+         "patterns": [],
+         "responses": ["已检测到《学校》"],
+         "context_set": ""
+        },
+        {"category": "教师",
+         "patterns": [],
+         "responses": ["已检测到《教师》"],
+         "context_set": ""
+        },
+        {"category": "教育教学",
+         "patterns": [],
+         "responses": ["已检测到《教育教学》"],
+         "context_set": ""
+        },
+        {"category": "经费保障",
+         "patterns": [],
+         "responses": ["已检测到《经费保障》"],
+         "context_set": ""
+        },
+        {"category": "法律责任",
+         "patterns": [],
+         "responses": ["已检测到《法律责任》"],
+         "context_set": ""
+        },
+        {"category": "附责",
+         "patterns": [],
+         "responses": ["已检测到《附责》"],
+         "context_set": ""
+        }
+]
+}
