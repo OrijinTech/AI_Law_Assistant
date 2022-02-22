@@ -1,8 +1,6 @@
-import numpy as np
 import discord
 import Aiyu
-import main
-from Tools import support_fnc
+from Execution import main
 
 # Creating Lists
 

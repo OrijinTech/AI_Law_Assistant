@@ -205,8 +205,8 @@ class Aiyu:
                     print("AIYU: 这是关于什么的对话？")
                     learn_type = input("您： ")
                     if learn_type in self.docs_y:
-                        support_fnc.add_pattern(self.intent_file, self.intents, self.tags, self.patterns, learn_pattern,
-                                                learn_type)
+                        support_fnc.add_pattern(self.intent_file,  learn_pattern,
+                                                learn_type, self.intents, self.tags, self.patterns,)
                     keep_learn = input("AIYU: 还有其他要我学习的吗？(Y/N)： ")
                     if keep_learn == "N":
                         self.state = AI_StateMachine.States.CHAT

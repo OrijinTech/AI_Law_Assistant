@@ -147,26 +147,79 @@ def split_sentence(sentence, language):
     return tokenized_list_of_words
 
 
-def add_pattern(intent_file, intents, category, pattern, sentence, learn_type):
+def add_pattern(intent_file, pattern_to_learn, add_to_category, intents="intents", pattern="patterns", category="category"):
     '''
     添加新关键词句到.json文件中
     :param intent_file: .json文件名路径（str）
     :param intents: 文件开头名字（str）
     :param category: 所有分类分类名称（data）
     :param pattern: 所有分类关键词句（data）
-    :param sentence: 要加入的关键词句（str）
-    :param learn_type: 要加入关键词句的目标分类（str）
+    :param pattern_to_learn: 要加入的关键词句（str）
+    :param add_to_category: 要加入关键词句的目标分类（str）
     :return: None
     '''
     with open(intent_file, "r", encoding="utf8") as file:
         # returning the Json object
         data = json.load(file)
         for intent in data[intents]:
-            # For each pattern inside each intent, we want to tokenize the words that are in sentences.
-            if intent[category] == learn_type:
-                intent[pattern].append(sentence)
+            if intent[category] == add_to_category:
+                intent[pattern].append(pattern_to_learn)
     with open(intent_file, "w", encoding="utf8") as file:
         json.dump(data, file, ensure_ascii=False, indent=2)
+
+
+def add_category(intent_file, category):
+    '''
+    在.json文件内添加新的种类(category)
+    :param intent_file: 目标.json文件
+    :type intent_file: str
+    :param category: 待添加的新种类
+    :type category: str
+    :return: None
+    :rtype: None
+    '''
+    with open(intent_file, "r", encoding="utf8") as file:
+        data = json.load(file)
+        category_to_add = {"category": category, "patterns": [], "responses": [], "context_set": ""}
+        data["intents"].append(category_to_add)
+    with open(intent_file, "w", encoding="utf8") as file:
+        json.dump(data, file, ensure_ascii=False, indent=2)
+
+
+def update_json(intent_file, intents="intents", pattern="patterns", category="category"):
+    '''
+    更新.json文件
+    :param intent_file: 目标.json文件
+    :type intent_file: str
+    :param intents: .json文件内对应的 "intents” 名称标题
+    :type intents: str
+    :param pattern: .json文件内对应的 "patterns” 名称标题
+    :type pattern: str
+    :param category: .json文件内对应的 "category” 名称标题
+    :type category: str
+    :return: None
+    :rtype: None
+    '''
+    while True:
+        create_bool = input("创建Category = C？ | 添加Pattern = P")
+        if create_bool == "C":
+            input_category = input("请输入创建的category：")
+            cat_list = input_category.split("，")
+            # adding all categories
+            for cat in cat_list:
+                add_category(intent_file, cat)
+        elif create_bool == "P":
+            learn_pattern = input("请输入添加的pattern：")
+            add_to_category = input("请输入目标category")
+            pat_list = learn_pattern.split("，")
+            try:
+                for pat in pat_list:
+                    add_pattern(intent_file, pattern, pat, add_to_category, intents, category)
+            except KeyError:
+                print("找不到目标Category，请重试。")
+        keep_learn = input("AIYU: 还有其他要我学习的吗？(Y/N)： ")
+        if keep_learn == "N":
+            break
 
 
 def make_correction(message):
@@ -224,4 +277,3 @@ def get_ai_username(mode):
     elif mode == "discord":
         username = ""
     return username
-
