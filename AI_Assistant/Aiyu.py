@@ -1,19 +1,25 @@
+import keras
 import numpy as np
+import os
 import numpy
 import tflearn
 import discord
 import tensorflow
+from keras.models import load_model
+from keras.models import save_model
 from AI_Assistant import AI_StateMachine
 from nltk.stem.lancaster import \
     LancasterStemmer  # Used to analyze words from the sentence (getting the root of the word --> only for English)
 from Tools import support_fnc
+import h5py
+
 
 
 # 用于创建种类识别object的框架。
 class Aiyu:
     # Constructor
     def __init__(self, training_set, output_data, words, labels, docs_x, docs_y, ai_model,
-                 intent_file, intents, tags, patterns, response_list, language, state):
+                 intent_file, intents, tags, patterns, response_list, language, state, model_name):
         '''
         AI Constructor
         :param training_set: 训练数据（list）
@@ -45,6 +51,7 @@ class Aiyu:
         self.response_list = response_list
         self.language = language
         self.state = state
+        self.model_name = model_name
 
     def data_processor(self):
         '''
@@ -119,24 +126,56 @@ class Aiyu:
         self.model = model
 
     # model name = model.tflearn
-    def save_model(self, model_name):
+    def save_model(self, path_name, model_name):
         '''
         保存模型（未完成）
+        :param path_name: 模型储存位置（str）
         :param model_name: 模型名称（str）
         :return: None
         '''
-        self.model.save(model_name)
+        save_parameter = path_name + "/" + model_name
+        save_model(self.model, 'model1.h5', save_format='h5')
+        print("Model_Saved")
 
-    def check_for_model(self, model_name):
+    def loading_model(self, path_name, model_name):
+        '''
+        加载AI模型
+        :param path_name: 模型储存位置
+        :param model_name: 模型名称（str）
+        :return: None
+        '''
+        load_parameter = path_name + "/" + model_name
+        self.model = load_model(load_parameter)
+
+    def check_model(self, path_name, model_name):
         '''
         检查模型是否存在
-        :param model_name: 模型名称（str）
-        :return: None
+        :param path_name: 模型储存位置
+        :param model_name: 模型名称
+        :return: Boolean
         '''
+        check_parameter = path_name + "/" + model_name
         try:
-            self.model.load(model_name)
+            self.model.load(check_parameter)
+            return True
         except:
             print("Model is not present, you need to train the model.")
+            return False
+
+    def prepare_model(self, num_neurons, batch_size, epoch_num, path_name="AI_Models", retrain_model="N"):
+        if retrain_model == "Y":
+            print("Retraining Model")
+            self.train_model(num_neurons, batch_size, epoch_num)
+            self.save_model(path_name, self.model_name)
+        elif self.check_model(path_name, self.model_name):
+            print("Loading Model")
+            self.loading_model(path_name, self.model_name)
+        else:
+            print("Training New Model")
+            self.train_model(num_neurons, batch_size, epoch_num)
+            self.save_model(path_name, self.model_name)
+        # else:
+        #     self.loading_model(path_name, self.model_name)
 
     def pick_response(self, inp, results, results_index, conversation_type, labels, mode):
         '''
@@ -195,7 +234,8 @@ class Aiyu:
                     0]  # Chinese Version
                 results_index = numpy.argmax(results)
                 conversation_type = self.labels[results_index]
-                support_fnc.report_train_results(results, results_index, conversation_type, self.labels) # Report Results
+                support_fnc.report_train_results(results, results_index, conversation_type,
+                                                 self.labels)  # Report Results
                 print(self.pick_response(inp, results, results_index, conversation_type, self.labels, "dev"))
                 round_count += 1
             # Learn State
@@ -205,8 +245,8 @@ class Aiyu:
                     print("AIYU: 这是关于什么的对话？")
                     learn_type = input("您： ")
                     if learn_type in self.docs_y:
-                        support_fnc.add_pattern(self.intent_file,  learn_pattern,
-                                                learn_type, self.intents, self.tags, self.patterns,)
+                        support_fnc.add_pattern(self.intent_file, learn_pattern,
+                                                learn_type, self.intents, self.tags, self.patterns, )
                     keep_learn = input("AIYU: 还有其他要我学习的吗？(Y/N)： ")
                     if keep_learn == "N":
                         self.state = AI_StateMachine.States.CHAT

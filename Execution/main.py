@@ -2,6 +2,7 @@ import sys
 from AI_Assistant import Aiyu
 from AI_Assistant import AI_StateMachine
 import jieba
+import tensorflow
 
 # Creating Lists
 training_set = []
@@ -10,12 +11,13 @@ words = []
 labels = []
 docs_x = []
 docs_y = []
-model = None
+model = tensorflow.keras.Model()
+modelname = "LawType"
 
 # AI MODEL TRAINING DATA SETS:
-intent_file = "../Language_Data/Law_Datasets/Law_Data.json"  # 普法数据
+# intent_file = "../Language_Data/Law_Datasets/Law_Data.json"  # 普法数据
 # intent_file = "Language_Data/intents.json" # 英文版社交机器人
-# intent_file = "Language_Data/personalAI.json"  # 中文版社交机器人
+intent_file = "../Language_Data/Other_Data/personalAI.json"  # 中文版社交机器人
 # intent_file = "../Language_Data/personalAI.json"  # 中文版社交机器人(Discord私人版)
 # intent_file = "../Language_Data/publicAI.json"  # 中文版社交机器人(Discord版)
 # intent_file = "../Language_Data/Law_Data.json" # 普法AI(Discord版)
@@ -30,9 +32,9 @@ init_state = AI_StateMachine.States.CHAT
 
 def buildAI():
     aiyu = Aiyu.Aiyu(training_set, output_data, words, labels, docs_x, docs_y, model, intent_file, intents, category,
-                     patterns, response_list, language, init_state)
+                     patterns, response_list, language, init_state, modelname)
     aiyu.data_processor()
-    aiyu.train_model(16, 8, 120)
+    aiyu.prepare_model(16, 8, 120, "../AI_Models")
     aiyu.chat()
 
 
