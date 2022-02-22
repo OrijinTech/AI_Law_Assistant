@@ -201,13 +201,16 @@ def update_json(intent_file, intents="intents", pattern="patterns", category="ca
     :rtype: None
     '''
     while True:
-        create_bool = input("创建Category = C？ | 添加Pattern = P")
+        create_bool = input("创建Category = C？ | 添加Pattern = P \n")
         if create_bool == "C":
             input_category = input("请输入创建的category：")
             cat_list = input_category.split("，")
             # adding all categories
             for cat in cat_list:
                 add_category(intent_file, cat)
+            keep_learn = input("AIYU: 还有其他要我学习的吗？(Y/N)： ")
+            if keep_learn == "N":
+                break
         elif create_bool == "P":
             learn_pattern = input("请输入添加的pattern：")
             add_to_category = input("请输入目标category")
@@ -217,9 +220,11 @@ def update_json(intent_file, intents="intents", pattern="patterns", category="ca
                     add_pattern(intent_file, pattern, pat, add_to_category, intents, category)
             except KeyError:
                 print("找不到目标Category，请重试。")
-        keep_learn = input("AIYU: 还有其他要我学习的吗？(Y/N)： ")
-        if keep_learn == "N":
-            break
+            keep_learn = input("AIYU: 还有其他要我学习的吗？(Y/N)： ")
+            if keep_learn == "N":
+                break
+        else:
+            print("请重新输入")
 
 
 def make_correction(message):
