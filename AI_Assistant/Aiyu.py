@@ -134,7 +134,7 @@ class Aiyu:
         :return: None
         '''
         save_parameter = path_name + "/" + model_name
-        save_model(self.model, 'model1.h5', save_format='h5')
+        self.model.save(save_parameter)
         print("Model_Saved")
 
     def loading_model(self, path_name, model_name):
@@ -145,7 +145,7 @@ class Aiyu:
         :return: None
         '''
         load_parameter = path_name + "/" + model_name
-        self.model = load_model(load_parameter)
+        self.model = keras.models.load_model(load_parameter)
 
     def check_model(self, path_name, model_name):
         '''
@@ -167,15 +167,13 @@ class Aiyu:
             print("Retraining Model")
             self.train_model(num_neurons, batch_size, epoch_num)
             self.save_model(path_name, self.model_name)
-        elif self.check_model(path_name, self.model_name):
+        elif not self.check_model(path_name, self.model_name):
             print("Loading Model")
             self.loading_model(path_name, self.model_name)
         else:
             print("Training New Model")
             self.train_model(num_neurons, batch_size, epoch_num)
             self.save_model(path_name, self.model_name)
-        # else:
-        #     self.loading_model(path_name, self.model_name)
 
     def pick_response(self, inp, results, results_index, conversation_type, labels, mode):
         '''
