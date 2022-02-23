@@ -4,7 +4,7 @@ import os
 import numpy
 import tflearn
 import discord
-import tensorflow
+import tensorflow as tf
 from keras.models import load_model
 from keras.models import save_model
 from AI_Assistant import AI_StateMachine
@@ -12,7 +12,6 @@ from nltk.stem.lancaster import \
     LancasterStemmer  # Used to analyze words from the sentence (getting the root of the word --> only for English)
 from Tools import support_fnc
 import h5py
-
 
 
 # 用于创建种类识别object的框架。
@@ -98,21 +97,29 @@ class Aiyu:
         self.output = np.array(self.output)
         print("Finished processing data.")
 
-    def train_model(self, num_neurons, batch_size, epoch_num):
+    def prepare_model(self, num_neurons, batch_size, epoch_num, folder_name, model_name, retrain_model="N",
+                      path_name="../AI_Models"):
         '''
         训练AI模型，更多在 http://tflearn.org/models/dnn/
+        :param path_name: 模型储存路径
+        :param folder_name: 模型储存文件夹名
+        :param model_name: 模型储存文件前缀名
+        :param retrain_model:是否重新训练模型
         :param num_neurons: 神经元数量
         :param batch_size: 批量训练大小
         :param epoch_num: 迭代数量
         :return: None
         '''
         print("Training the best model.")
+        # Preparing Variables
         training_data = self.training
         output_data = self.output
+        save_parameter = path_name + "/" + folder_name + "/" + model_name
+        meta_file = save_parameter + ".meta"
+        index_file = save_parameter + ".index"
         # Input Layer
         net = tflearn.input_data(shape=[None, len(self.training[0])])
         # Hidden Layers
-        # for layer in range(num_layer):
         net = tflearn.fully_connected(net, num_neurons)
         net = tflearn.fully_connected(net, num_neurons)
         # Output Layer
@@ -120,60 +127,20 @@ class Aiyu:
         # Model
         net = tflearn.regression(net)
         model = tflearn.DNN(net)
-        print("Starting fitting")
-        model.fit(training_data, output_data, n_epoch=epoch_num, batch_size=batch_size,
-                  show_metric=True)  # show_metric=True if you want training report
-        self.model = model
-
-    # model name = model.tflearn
-    def save_model(self, path_name, model_name):
-        '''
-        保存模型（未完成）
-        :param path_name: 模型储存位置（str）
-        :param model_name: 模型名称（str）
-        :return: None
-        '''
-        save_parameter = path_name + "/" + model_name
-        self.model.save(save_parameter)
-        print("Model_Saved")
-
-    def loading_model(self, path_name, model_name):
-        '''
-        加载AI模型
-        :param path_name: 模型储存位置
-        :param model_name: 模型名称（str）
-        :return: None
-        '''
-        load_parameter = path_name + "/" + model_name
-        self.model = keras.models.load_model(load_parameter)
-
-    def check_model(self, path_name, model_name):
-        '''
-        检查模型是否存在
-        :param path_name: 模型储存位置
-        :param model_name: 模型名称
-        :return: Boolean
-        '''
-        check_parameter = path_name + "/" + model_name
-        try:
-            self.model.load(check_parameter)
-            return True
-        except:
-            print("Model is not present, you need to train the model.")
-            return False
-
-    def prepare_model(self, num_neurons, batch_size, epoch_num, path_name="AI_Models", retrain_model="N"):
         if retrain_model == "Y":
             print("Retraining Model")
-            self.train_model(num_neurons, batch_size, epoch_num)
-            self.save_model(path_name, self.model_name)
-        elif not self.check_model(path_name, self.model_name):
-            print("Loading Model")
-            self.loading_model(path_name, self.model_name)
+            model.fit(training_data, output_data, n_epoch=epoch_num, batch_size=batch_size,
+                      show_metric=True)  # show_metric=True if you want training report
+            model.save(save_parameter)
+            self.model = model
+        elif [os.path.isfile(i) for i in [meta_file, index_file]] == [True, True]:
+            model.load(save_parameter)
+            self.model = model
         else:
-            print("Training New Model")
-            self.train_model(num_neurons, batch_size, epoch_num)
-            self.save_model(path_name, self.model_name)
+            model.fit(training_data, output_data, n_epoch=epoch_num, batch_size=batch_size,
+                      show_metric=True)  # show_metric=True if you want training report
+            model.save(save_parameter)
+            self.model = model
 
     def pick_response(self, inp, results, results_index, conversation_type, labels, mode):
         '''
