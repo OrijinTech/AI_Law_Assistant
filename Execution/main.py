@@ -11,7 +11,7 @@ words = []
 labels = []
 docs_x = []
 docs_y = []
-model = tensorflow.keras.Model()
+model = None
 modelname = "LawType"
 
 # AI MODEL TRAINING DATA SETS:
@@ -34,7 +34,7 @@ def buildAI():
     aiyu = Aiyu.Aiyu(training_set, output_data, words, labels, docs_x, docs_y, model, intent_file, intents, category,
                      patterns, response_list, language, init_state, modelname)
     aiyu.data_processor()
-    aiyu.prepare_model(16, 8, 120, "../AI_Models")
+    aiyu.prepare_model(16, 8, 120, "LawType", "Law_Type")
     aiyu.chat()
 
 
