@@ -233,3 +233,8 @@ class Aiyu:
         conversation_type = self.labels[results_index]
         support_fnc.report_train_results(results, results_index, conversation_type, self.labels)
         return self.pick_response(inp, results, results_index, conversation_type, self.labels, "discord")
+
+
+
+
+

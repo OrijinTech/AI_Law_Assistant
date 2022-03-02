@@ -282,3 +282,6 @@ def get_ai_username(mode):
     elif mode == "discord":
         username = ""
     return username
+
+
+
