@@ -217,7 +217,7 @@ def update_json(intent_file, intents="intents", pattern="patterns", category="ca
             pat_list = learn_pattern.split("，")
             try:
                 for pat in pat_list:
-                    add_pattern(intent_file, pattern, pat, add_to_category, intents, category)
+                    add_pattern(intent_file, pat, add_to_category, intents, pattern, category)
             except KeyError:
                 print("找不到目标Category，请重试。")
             keep_learn = input("AIYU: 还有其他要我学习的吗？(Y/N)： ")
