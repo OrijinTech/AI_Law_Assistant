@@ -1,3 +1,13 @@
-# AIYU AI 助手
+# AI Law Assistant
 
-人工智能对话框架。用户可提供自己的.json文件作为机器学习数据，生成新AI模型。
+主要研究目的：
+1. 语言生成（分析语境）
+2. 智能回复
+3. 语言处理
+
+
+Major Research Areas:
+1. Language generation (context based)
+2. Intelligent response
+3. Language processing
+
