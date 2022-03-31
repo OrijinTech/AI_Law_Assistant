@@ -3,7 +3,6 @@ from difflib import SequenceMatcher
 import jieba
 import nltk
 import numpy as np
-import pycorrector
 from nltk import LancasterStemmer
 from datetime import datetime
 from stopwordsiso import stopwords  # Might use later
@@ -225,19 +224,6 @@ def update_json(intent_file, intents="intents", pattern="patterns", category="ca
                 break
         else:
             print("请重新输入")
-
-
-def make_correction(message):
-    '''
-    寻找并纠正用户信息内的错误。
-    :param message: 用户输入信息
-    :type message: str（中文）
-    :return: 纠正过后的用户信息
-    :rtype: str（中文）
-    '''
-    correct_message, detail = pycorrector.correct(message)
-    # print(correct_message)
-    return correct_message
 
 
 def get_user_input(rd_count):

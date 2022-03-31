@@ -15,12 +15,10 @@ model = None
 modelname = "LawType"
 
 # AI MODEL TRAINING DATA SETS:
-# intent_file = "../Language_Data/Law_Datasets/Law_Data.json"  # 普法数据
-# intent_file = "Language_Data/intents.json" # 英文版社交机器人
-intent_file = "../Language_Data/Other_Data/personalAI.json"  # 中文版社交机器人
-# intent_file = "../Language_Data/personalAI.json"  # 中文版社交机器人(Discord私人版)
-# intent_file = "../Language_Data/publicAI.json"  # 中文版社交机器人(Discord版)
-# intent_file = "../Language_Data/Law_Data.json" # 普法AI(Discord版)
+# intent_file = "../Language_Data/Law_Datasets/Law_Data.json"   # 普法AI
+# intent_file = "Language_Data/intents.json"                    # 英文版社交机器人
+intent_file = "../Language_Data/Other_Data/personalAI.json"   # 社交机器人私人版
+# intent_file = "../Language_Data/Other_Data/publicAI.json"     # 社交机器人普通版
 
 intents = "intents"
 category = "category"
@@ -34,7 +32,7 @@ def buildAI():
     aiyu = Aiyu.Aiyu(training_set, output_data, words, labels, docs_x, docs_y, model, intent_file, intents, category,
                      patterns, response_list, language, init_state, modelname)
     aiyu.data_processor()
-    aiyu.prepare_model(16, 8, 120, "LawType", "Law_Type")
+    aiyu.prepare_model(16, 8, 120, "AIYU_Core", retrain_model="Y")
     aiyu.chat()
 
 
