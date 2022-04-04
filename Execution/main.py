@@ -32,7 +32,7 @@ def buildAI():
     aiyu = Aiyu.Aiyu(training_set, output_data, words, labels, docs_x, docs_y, model, intent_file, intents, category,
                      patterns, response_list, language, init_state, modelname)
     aiyu.data_processor()
-    aiyu.prepare_model(16, 8, 120, "AIYU_Core", retrain_model="Y")
+    aiyu.construct_model(16, 8, 120, "AIYU_Core", retrain_model="Y")
     aiyu.chat()
 
 

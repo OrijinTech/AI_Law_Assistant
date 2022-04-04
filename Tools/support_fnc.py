@@ -3,7 +3,7 @@ from difflib import SequenceMatcher
 import jieba
 import nltk
 import numpy as np
-from nltk import LancasterStemmer
+from nltk.stem.lancaster import LancasterStemmer
 from datetime import datetime
 from stopwordsiso import stopwords  # Might use later
 
@@ -121,7 +121,7 @@ def report_train_results(results, results_index, intent_type, labels):
           "\nProbability of the Type:", result_percentage, "%")
 
 
-def split_sentence(sentence, language):
+def split_sentence(sentence, language="ch"):
     '''
     分词工具
     :param sentence: 分词的原句（str）
@@ -224,6 +224,42 @@ def update_json(intent_file, intents="intents", pattern="patterns", category="ca
                 break
         else:
             print("请重新输入")
+
+# 此function用于更新Model用。
+# def update_datasets(pattern, category):
+#     words = []
+#     docs_x = []
+#     docs_y = []
+#     labels = []
+#     training = []
+#     output = []
+#     stemmer = LancasterStemmer()
+#     tokenized_list_of_words = split_sentence(pattern)
+#     if len(tokenized_list_of_words) > 0:
+#         words.extend(tokenized_list_of_words)
+#         docs_x.append(tokenized_list_of_words)
+#         words = sorted(list(words))
+#     docs_y.append(category)
+#     if category not in labels:
+#         labels.append(category)
+#     labels = sorted(labels)
+#     out_empty = [0 for _ in range(len(labels))]
+#     for x, doc in enumerate(docs_x):
+#         updated_bag = []
+#         wrds = [stemmer.stem(w) for w in doc]
+#         for w in words:
+#             if w in wrds:
+#                 updated_bag.append(1)
+#             else:
+#                 updated_bag.append(0)
+#         output_row = out_empty[:]
+#         output_row[labels.index(docs_y[x])] = 1
+#         training.append(updated_bag)
+#         output.append(output_row)
+#     # print(self.training)
+#     training = np.array(training)
+#     output = np.array(output)
+#     return [training, output]
 
 
 def get_user_input(rd_count):

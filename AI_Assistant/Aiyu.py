@@ -11,8 +11,7 @@ from keras.layers import Dense
 from keras.models import load_model
 from keras.models import save_model
 from AI_Assistant import AI_StateMachine
-from nltk.stem.lancaster import \
-    LancasterStemmer  # Used to analyze words from the sentence (getting the root of the word --> only for English)
+from nltk.stem.lancaster import LancasterStemmer  # Used to analyze words from the sentence (getting the root of the word --> only for English)
 from Tools import support_fnc
 
 
@@ -99,7 +98,7 @@ class Aiyu:
         self.output = np.array(self.output)
         print("Finished processing data.")
 
-    def prepare_model(self, num_neurons, batch_size, epoch_num, model_name, retrain_model="N", path_name="../AI_Models"):
+    def construct_model(self, num_neurons, batch_size, epoch_num, model_name, retrain_model="N", path_name="../AI_Models"):
         """
         训练AI模型，更多在 https://tflearn.org/models/dnn/
         :param path_name: 模型储存路径
@@ -115,7 +114,7 @@ class Aiyu:
         # Preparing Variables
         training_data = self.training
         output_data = self.output
-        save_parameter = "../AI_Models" + "/" + model_name
+        save_parameter = path_name + "/" + model_name
         # Input Layer
         inp_layer = Input(shape=(len(self.training[0]), ))  # example: input shape = (None, 689)
         # Hidden Layers
@@ -153,6 +152,12 @@ class Aiyu:
             print("Saving Model")
             model.save(save_parameter)
             self.model = model
+
+    # Used for AI MODEL UPDATING FUNCTION
+    # def update_model(self, num_neurons, batch_size, epoch_num, model_name, retrain_model="N", path_name="../AI_Models"):
+    #     training_data = self.training
+    #     output_data = self.output
+
 
     def pick_response(self, inp, results, results_index, conversation_type, labels, mode):
         """
@@ -215,19 +220,8 @@ class Aiyu:
                 round_count += 1
             # Learn State
             if self.state == AI_StateMachine.States.LEARN:
-                while True:
-                    learn_pattern = input("AIYU: 请输入您要我学习的文献：")
-                    print("AIYU: 这是关于什么的对话？" + "\n")
-                    print(self.labels)
-                    learn_type = input("您： ")
-                    if learn_type in self.docs_y:
-                        support_fnc.add_pattern(self.intent_file, learn_pattern,
-                                                learn_type, self.intents, self.tags, self.patterns, )
-                    keep_learn = input("AIYU: 还有其他要我学习的吗？(Y/N)： ")
-                    if keep_learn != "Y":
-                        self.state = AI_StateMachine.States.CHAT
-                        round_count += 1
-                        break
+                support_fnc.update_json(self.intent_file, self.intents, self.patterns, self.tags)
+                self.state = AI_StateMachine.States.CHAT
             # Quit the program
             if self.state == AI_StateMachine.States.QUIT:
                 break
@@ -244,3 +238,5 @@ class Aiyu:
         conversation_type = self.labels[results_index]
         support_fnc.report_train_results(results, results_index, conversation_type, self.labels)
         return self.pick_response(inp, results, results_index, conversation_type, self.labels, "discord")
+
+
