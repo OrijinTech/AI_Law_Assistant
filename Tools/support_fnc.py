@@ -1,27 +1,25 @@
 import json
-from difflib import SequenceMatcher
+import re
+import numpy as np
 import jieba
 import nltk
-import numpy as np
+from difflib import SequenceMatcher
 from nltk.stem.lancaster import LancasterStemmer
 from datetime import datetime
+from Language_Data import file_names
+from string import digits
 from stopwordsiso import stopwords  # Might use later
 
 
-def cont_num(keyword) -> bool:
-    '''
-    检测str内是否有integer
-    :param keyword: 输入词语
-    :type keyword: str
-    :return: 有数字或没数字
-    :rtype: bool
-    '''
-    return any(char.isdigit() for char in keyword)
+# ==================================================================================================================================== #
+#                                                           FILE FUNCTIONS
+# ==================================================================================================================================== #
 
 
-def open_file(file_name, report):
+def open_file(file_name, mode='r', report='N'):
     '''
     打开一个指定的.json文件
+    :param mode: 打开模式，默认为'r'(str)
     :param file_name: 文件名和路径
     :param report: 显示是否正在打开文件。
     :return: .json文件里的数据，type any
@@ -29,10 +27,126 @@ def open_file(file_name, report):
     if report == "Y":
         print("Opening file: ", file_name)
     # Open the json file with the train data
-    with open(file_name, encoding="utf8") as file:
+    with open(file_name, mode, encoding="utf8") as file:
         # returning the Json object
         data = json.load(file)
     return data
+
+
+# ==================================================================================================================================== #
+#                                                           JSON FUNCTIONS
+# ==================================================================================================================================== #
+
+
+def add_pattern(intent_file, pattern_to_learn, add_to_category, intents="intents", pattern="patterns", category="category"):
+    '''
+    添加新关键词句到.json文件中
+    :param intent_file: .json文件名路径（str）
+    :param intents: 文件开头名字（str）
+    :param category: 所有分类分类名称（data）
+    :param pattern: 所有分类关键词句（data）
+    :param pattern_to_learn: 要加入的关键词句（str）
+    :param add_to_category: 要加入关键词句的目标分类（str）
+    :return: None
+    '''
+    with open(intent_file, "r", encoding="utf8") as file:
+        # returning the Json object
+        data = json.load(file)
+        for intent in data[intents]:
+            if intent[category] == add_to_category:
+                intent[pattern].append(pattern_to_learn)
+    with open(intent_file, "w", encoding="utf8") as file:
+        json.dump(data, file, ensure_ascii=False, indent=2)
+
+
+def add_category(intent_file, category):
+    '''
+    在.json文件内添加新的种类(category)
+    :param intent_file: 目标.json文件
+    :type intent_file: str
+    :param category: 待添加的新种类
+    :type category: str
+    :return: None
+    :rtype: None
+    '''
+    with open(intent_file, "r", encoding="utf8") as file:
+        data = json.load(file)
+        category_to_add = {"category": category, "patterns": [], "responses": [], "context_set": ""}
+        data["intents"].append(category_to_add)
+    with open(intent_file, "w", encoding="utf8") as file:
+        json.dump(data, file, ensure_ascii=False, indent=2)
+
+
+def update_json(intent_file, intents="intents", pattern="patterns", category="category"):
+    '''
+    更新.json文件
+    :param intent_file: 目标.json文件
+    :type intent_file: str
+    :param intents: .json文件内对应的 "intents” 名称标题
+    :type intents: str
+    :param pattern: .json文件内对应的 "patterns” 名称标题
+    :type pattern: str
+    :param category: .json文件内对应的 "category” 名称标题
+    :type category: str
+    :return: None
+    :rtype: None
+    '''
+    while True:
+        create_bool = input("创建Category = C？ | 添加Pattern = P \n")
+        if create_bool == "C":
+            input_category = input("请输入创建的category：")
+            cat_list = input_category.split("，")
+            # adding all categories
+            for cat in cat_list:
+                add_category(intent_file, cat)
+            keep_learn = input("AIYU: 还有其他要我学习的吗？(Y/N)： ")
+            if keep_learn == "N":
+                break
+        elif create_bool == "P":
+            learn_pattern = input("请输入添加的pattern：")
+            add_to_category = input("请输入目标category")
+            pat_list = learn_pattern.split("，")
+            try:
+                for pat in pat_list:
+                    add_pattern(intent_file, pat, add_to_category, intents, pattern, category)
+            except KeyError:
+                print("找不到目标Category，请重试。")
+            keep_learn = input("AIYU: 还有其他要我学习的吗？(Y/N)： ")
+            if keep_learn == "N":
+                break
+        else:
+            print("请重新输入")
+
+
+def add_pattern_list(json_file, pattern_list, add_to_category, intents="intents", pattern="patterns", category="category"):
+    data = open_file(json_file)
+    for intent in data[intents]:
+        if intent[category] == add_to_category:
+            for pat in pattern_list:
+                intent[pattern].append(pat)
+    with open(json_file, "w", encoding="utf8") as file:
+        json.dump(data, file, ensure_ascii=False, indent=2)
+
+
+def txt_load_pattern(txt_file, json_file, add_to_category, intents="intents", pattern="patterns", category="category"):
+    data = open(txt_file, 'r', encoding='utf8')
+    inp_pat = []
+    try:
+        list_pat = data.readlines()[1:3000]
+        # format the words read from the txt
+        for w in list_pat:
+            w = re.sub(r'[0-9]+', '', w)
+            w = re.sub('\n', '', w)
+            w = re.sub('\t', '', w)
+            inp_pat.append(w)
+    except IndexError:
+        print('Cannot read more lines from the given txt files.')
+    add_pattern_list(json_file, inp_pat, add_to_category, intents, pattern, category)
+
+
+# ==================================================================================================================================== #
+#                                                           BOT FUNCTIONS
+# ==================================================================================================================================== #
 
 
 def clear_chat():
@@ -42,6 +156,55 @@ def clear_chat():
     '''
     for i in range(50):
         print("\n")
+
+
+def get_user_input(rd_count):
+    '''
+    获取用户输入
+    :param rd_count: 循环数（int）
+    :return: 用户输入（str）
+    '''
+    global inp
+    try:
+        if rd_count == 0:
+            print("AIYU: 您好, 我是AIYU, 有什么可以帮助您的吗？")
+            inp = input("请开始和AIYU的对话: ")
+            inp.replace("请开始和AIYU的对话: ", "")
+        else:
+            inp = input("您: ")
+            inp.replace("您: ", "")
+    except IOError:
+        print("AIYU: 对不起，AIYU没听懂 T_T。")
+    return inp
+
+
+def get_current_time():
+    '''
+    获取现在时间
+    :return: 时间（str）
+    '''
+    curr_time = datetime.now()
+    curr_time_format = curr_time.strftime("%H:%M:%S")
+    return curr_time_format
+
+
+def get_ai_username(mode):
+    '''
+    获取AI用户名
+    :param mode: 使用模式，现在有dev= developer，discord= 用户（str）
+    :return: 用户名（str）
+    '''
+    global username
+    if mode == "dev":
+        username = "AIYU: "
+    elif mode == "discord":
+        username = ""
+    return username
+
+
+# ==================================================================================================================================== #
+#                                                           AI MODEL FUNCTIONS
+# ==================================================================================================================================== #
 
 
 def check_similarity(a, b):
@@ -146,85 +309,6 @@ def split_sentence(sentence, language="ch"):
     return tokenized_list_of_words
 
 
-def add_pattern(intent_file, pattern_to_learn, add_to_category, intents="intents", pattern="patterns", category="category"):
-    '''
-    添加新关键词句到.json文件中
-    :param intent_file: .json文件名路径（str）
-    :param intents: 文件开头名字（str）
-    :param category: 所有分类分类名称（data）
-    :param pattern: 所有分类关键词句（data）
-    :param pattern_to_learn: 要加入的关键词句（str）
-    :param add_to_category: 要加入关键词句的目标分类（str）
-    :return: None
-    '''
-    with open(intent_file, "r", encoding="utf8") as file:
-        # returning the Json object
-        data = json.load(file)
-        for intent in data[intents]:
-            if intent[category] == add_to_category:
-                intent[pattern].append(pattern_to_learn)
-    with open(intent_file, "w", encoding="utf8") as file:
-        json.dump(data, file, ensure_ascii=False, indent=2)
-
-
-def add_category(intent_file, category):
-    '''
-    在.json文件内添加新的种类(category)
-    :param intent_file: 目标.json文件
-    :type intent_file: str
-    :param category: 待添加的新种类
-    :type category: str
-    :return: None
-    :rtype: None
-    '''
-    with open(intent_file, "r", encoding="utf8") as file:
-        data = json.load(file)
-        category_to_add = {"category": category, "patterns": [], "responses": [], "context_set": ""}
-        data["intents"].append(category_to_add)
-    with open(intent_file, "w", encoding="utf8") as file:
-        json.dump(data, file, ensure_ascii=False, indent=2)
-
-
-def update_json(intent_file, intents="intents", pattern="patterns", category="category"):
-    '''
-    更新.json文件
-    :param intent_file: 目标.json文件
-    :type intent_file: str
-    :param intents: .json文件内对应的 "intents” 名称标题
-    :type intents: str
-    :param pattern: .json文件内对应的 "patterns” 名称标题
-    :type pattern: str
-    :param category: .json文件内对应的 "category” 名称标题
-    :type category: str
-    :return: None
-    :rtype: None
-    '''
-    while True:
-        create_bool = input("创建Category = C？ | 添加Pattern = P \n")
-        if create_bool == "C":
-            input_category = input("请输入创建的category：")
-            cat_list = input_category.split("，")
-            # adding all categories
-            for cat in cat_list:
-                add_category(intent_file, cat)
-            keep_learn = input("AIYU: 还有其他要我学习的吗？(Y/N)： ")
-            if keep_learn == "N":
-                break
-        elif create_bool == "P":
-            learn_pattern = input("请输入添加的pattern：")
-            add_to_category = input("请输入目标category")
-            pat_list = learn_pattern.split("，")
-            try:
-                for pat in pat_list:
-                    add_pattern(intent_file, pat, add_to_category, intents, pattern, category)
-            except KeyError:
-                print("找不到目标Category，请重试。")
-            keep_learn = input("AIYU: 还有其他要我学习的吗？(Y/N)： ")
-            if keep_learn == "N":
-                break
-        else:
-            print("请重新输入")
-
 # 此function用于更新Model用。
 # def update_datasets(pattern, category):
 #     words = []
@@ -260,50 +344,3 @@ def update_json(intent_file, intents="intents", pattern="patterns", category="ca
 #     training = np.array(training)
 #     output = np.array(output)
 #     return [training, output]
-
-
-def get_user_input(rd_count):
-    '''
-    获取用户输入
-    :param rd_count: 循环数（int）
-    :return: 用户输入（str）
-    '''
-    global inp
-    try:
-        if rd_count == 0:
-            print("AIYU: 您好, 我是AIYU, 有什么可以帮助您的吗？")
-            inp = input("请开始和AIYU的对话: ")
-            inp.replace("请开始和AIYU的对话: ", "")
-        else:
-            inp = input("您: ")
-            inp.replace("您: ", "")
-    except IOError:
-        print("AIYU: 对不起，AIYU没听懂 T_T。")
-    return inp
-
-
-def get_current_time():
-    '''
-    获取现在时间
-    :return: 时间（str）
-    '''
-    curr_time = datetime.now()
-    curr_time_format = curr_time.strftime("%H:%M:%S")
-    return curr_time_format
-
-
-def get_ai_username(mode):
-    '''
-    获取AI用户名
-    :param mode: 使用模式，现在有dev= developer，discord= 用户（str）
-    :return: 用户名（str）
-    '''
-    global username
-    if mode == "dev":
-        username = "AIYU: "
-    elif mode == "discord":
-        username = ""
-    return username
-
-
-

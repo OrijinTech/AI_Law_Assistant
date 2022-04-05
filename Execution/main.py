@@ -1,6 +1,7 @@
 import sys
 from AI_Assistant import Aiyu
 from AI_Assistant import AI_StateMachine
+from Language_Data import file_names
 import jieba
 import tensorflow
 
@@ -12,13 +13,7 @@ labels = []
 docs_x = []
 docs_y = []
 model = None
-modelname = "LawType"
-
-# AI MODEL TRAINING DATA SETS:
-# intent_file = "../Language_Data/Law_Datasets/Law_Data.json"   # 普法AI
-# intent_file = "Language_Data/intents.json"                    # 英文版社交机器人
-intent_file = "../Language_Data/Other_Data/personalAI.json"   # 社交机器人私人版
-# intent_file = "../Language_Data/Other_Data/publicAI.json"     # 社交机器人普通版
+model_name = "LawType"
 
 intents = "intents"
 category = "category"
@@ -28,16 +23,16 @@ language = "ch"
 init_state = AI_StateMachine.States.CHAT
 
 
-def buildAI():
-    aiyu = Aiyu.Aiyu(training_set, output_data, words, labels, docs_x, docs_y, model, intent_file, intents, category,
-                     patterns, response_list, language, init_state, modelname)
+def build_ai():
+    aiyu = Aiyu.Aiyu(training_set, output_data, words, labels, docs_x, docs_y, model, file_names.jsn_cbot_ch_n, intents, category,
+                     patterns, response_list, language, init_state, model_name)
     aiyu.data_processor()
     aiyu.construct_model(16, 8, 120, "AIYU_Core", retrain_model="Y")
     aiyu.chat()
 
 
 def main(start_var):
-    buildAI()
+    build_ai()
     return 0
 
 
