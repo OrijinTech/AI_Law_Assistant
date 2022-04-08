@@ -1,4 +1,5 @@
 import json
+import pickle
 import re
 import numpy as np
 import jieba
@@ -228,8 +229,12 @@ def get_max_similarity_percentage(sentence, list_of_resp):
     for sentences_in_list in list_of_resp:
         similarity_percentage = check_similarity(word_filter_rem(sentence, "您好"), sentences_in_list)
         responses_prob.append(similarity_percentage)
-    max_prob = max(responses_prob)
-    return responses_prob.index(max_prob)
+    try:
+        max_prob = max(responses_prob)
+        return responses_prob.index(max_prob)
+    except:
+        print("WARNING: No responses found. Please check if you entered responses in the corresponding json file.")
+
 
 
 def bag_of_words(s, words, language):
@@ -240,7 +245,7 @@ def bag_of_words(s, words, language):
     :return: numpy array
     '''
     bag_chinese = [0 for _ in range(len(words))]
-    s_words = split_sentence(s, language)
+    s_words = split_sentence(s, split_type="Y", language=language)
     words_list = list(s_words)
     for se in words_list:
         for i, w in enumerate(words):
@@ -256,7 +261,7 @@ def word_filter_rem(sentence, word):
     :param word: 指定被过滤词语 (str)
     :return: 新句子（str)
     '''
-    word_list = split_sentence(sentence, "ch")
+    word_list = split_sentence(sentence, language="ch")
     updated_sent = ""
     for w in word_list:
         if w == word:
@@ -284,17 +289,23 @@ def report_train_results(results, results_index, intent_type, labels):
           "\nProbability of the Type:", result_percentage, "%")
 
 
-def split_sentence(sentence, language="ch"):
-    '''
+def split_sentence(sentence, split_type="Y", language="ch"):
+    """
     分词工具
+    :param split_type: 分词或只添加到list --> Y/N (str)
     :param sentence: 分词的原句（str）
     :param language: 句子语言（str）
     :return: 分词后生成一个词语清单（list）
-    '''
+    """
     tokenized_list_of_words = []
     if language == "ch":
-        sentence_cut = jieba.cut(sentence, cut_all=False)
-        tokenized_list_of_words = list(sentence_cut)
+        if split_type == 'Y':
+            sentence_cut = jieba.cut(sentence, cut_all=False)
+            tokenized_list_of_words = list(sentence_cut)
+        elif split_type == 'N':
+            tokenized_list_of_words = tokenized_list_of_words.append(sentence)
+        else:
+            print("Tokenization is finished but list is empty right now.")
     elif language == "en":
         stemmer = LancasterStemmer()
         tokenized_list_of_words = nltk.word_tokenize(sentence)
@@ -309,38 +320,36 @@ def split_sentence(sentence, language="ch"):
     return tokenized_list_of_words
 
 
-# 此function用于更新Model用。
-# def update_datasets(pattern, category):
-#     words = []
-#     docs_x = []
-#     docs_y = []
-#     labels = []
-#     training = []
-#     output = []
-#     stemmer = LancasterStemmer()
-#     tokenized_list_of_words = split_sentence(pattern)
-#     if len(tokenized_list_of_words) > 0:
-#         words.extend(tokenized_list_of_words)
-#         docs_x.append(tokenized_list_of_words)
-#         words = sorted(list(words))
-#     docs_y.append(category)
-#     if category not in labels:
-#         labels.append(category)
-#     labels = sorted(labels)
-#     out_empty = [0 for _ in range(len(labels))]
-#     for x, doc in enumerate(docs_x):
-#         updated_bag = []
-#         wrds = [stemmer.stem(w) for w in doc]
-#         for w in words:
-#             if w in wrds:
-#                 updated_bag.append(1)
-#             else:
-#                 updated_bag.append(0)
-#         output_row = out_empty[:]
-#         output_row[labels.index(docs_y[x])] = 1
-#         training.append(updated_bag)
-#         output.append(output_row)
-#     # print(self.training)
-#     training = np.array(training)
-#     output = np.array(output)
-#     return [training, output]
+# ==================================================================================================================================== #
+#                                                           Other Functions
+# ==================================================================================================================================== #
+
+
+def has_pickle(pickle_file):
+    try:
+        load_pickle(pickle_file)
+        return True
+    except:
+        print("Cannot load training data")
+        return False
+
+
+def load_pickle(pickle_file):
+    directory = "../Training_Data/" + pickle_file
+    with open(directory, "rb") as f:
+        training_set, output_data, words, labels, docs_x, docs_y = pickle.load(f)
+    print("Pickle loaded.")
+    return training_set, output_data, words, labels, docs_x, docs_y
+
+
+def save_pickle(pickle_file, var1, var2, var3, var4, var5, var6):
+    directory = "../Training_Data/" + pickle_file
+    with open(directory, "wb") as f:
+        pickle.dump((var1, var2, var3, var4, var5, var6), f)
+    print("Pickle saved.")
+
+
+
+
+
+

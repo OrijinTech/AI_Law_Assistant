@@ -53,50 +53,56 @@ class Aiyu:
         self.state = state
         self.model_name = model_name
 
-    def data_processor(self):
+
+    def data_processor(self, pickle_file, force_process="N", split_mode="Y"):
         """
         初步数据处理，提取.json文件内的数据，存入对应容器中。
         :return: None
         """
-        print("Processing data for model training.")
-        data = support_fnc.open_file(self.intent_file, "Y")
-        # Iterate through the "intents" in the json file.
-        for intent in data[self.intents]:
-            # For each pattern inside each intent, we want to tokenize the words that are in sentences.
-            for pattern in intent[self.patterns]:
-                tokenized_list_of_words = support_fnc.split_sentence(pattern, self.language)
-                # add the tokenized words into the "words" list (only if the word list is not empty)
-                if len(tokenized_list_of_words) > 0:
-                    # print("list", tokenized_list_of_words, "added")
-                    self.words.extend(tokenized_list_of_words)
-                    self.docs_x.append(tokenized_list_of_words)
-                self.docs_y.append(intent[self.tags])
-                if intent[self.tags] not in self.labels:
-                    self.labels.append(intent[self.tags])
-        # prepare data for model training
-        stemmer = LancasterStemmer()
-        if self.language == "en":
-            self.words = [stemmer.stem(w.lower()) for w in self.words if w not in "?"]  # convert words into lower case
-        self.words = sorted(list(self.words))  # sort and remove duplicates
-        self.labels = sorted(self.labels)
-        labels = self.labels
-        out_empty = [0 for _ in range(len(labels))]
-        for x, doc in enumerate(self.docs_x):
-            bag = []
-            wrds = [stemmer.stem(w) for w in doc]
-            for w in self.words:
-                if w in wrds:
-                    bag.append(1)
-                else:
-                    bag.append(0)
-            output_row = out_empty[:]
-            output_row[labels.index(self.docs_y[x])] = 1
-            self.training.append(bag)
-            self.output.append(output_row)
-        # print(self.training)
-        self.training = np.array(self.training)
-        self.output = np.array(self.output)
-        print("Finished processing data.")
+        if not support_fnc.has_pickle(pickle_file) or force_process == "Y":
+            print("Processing data for model training.")
+            data = support_fnc.open_file(self.intent_file, report="Y")
+            # Iterate through the "intents" in the json file.
+            for intent in data[self.intents]:
+                # For each pattern inside each intent, we want to tokenize the words that are in sentences.
+                for pattern in intent[self.patterns]:
+                    tokenized_list_of_words = support_fnc.split_sentence(pattern, split_type=split_mode, language=self.language)
+                    # add the tokenized words into the "words" list (only if the word list is not empty)
+                    if len(tokenized_list_of_words) > 0:
+                        # print("list", tokenized_list_of_words, "added")
+                        self.words.extend(tokenized_list_of_words)
+                        self.docs_x.append(tokenized_list_of_words)
+                    self.docs_y.append(intent[self.tags])
+                    if intent[self.tags] not in self.labels:
+                        self.labels.append(intent[self.tags])
+            # prepare data for model training
+            stemmer = LancasterStemmer()
+            if self.language == "en":
+                self.words = [stemmer.stem(w.lower()) for w in self.words if w not in "?"]  # convert words into lower case
+            self.words = sorted(list(set(self.words)))  # sort and remove duplicates
+            self.labels = sorted(self.labels)
+            labels = self.labels
+            out_empty = [0 for _ in range(len(labels))]
+            for x, doc in enumerate(self.docs_x):
+                bag = []
+                wrds = [stemmer.stem(w) for w in doc]
+                for w in self.words:
+                    if w in wrds:
+                        bag.append(1)
+                    else:
+                        bag.append(0)
+                output_row = out_empty[:]
+                output_row[labels.index(self.docs_y[x])] = 1
+                self.training.append(bag)
+                self.output.append(output_row)
+            # print(self.training)
+            self.training = np.array(self.training)
+            self.output = np.array(self.output)
+            support_fnc.save_pickle(pickle_file, self.training, self.output, self.words, self.labels, self.docs_x, self.docs_y)
+            print("Finished processing data.")
+        else:
+            self.training, self.output, self.words, self.labels, self.docs_x, self.docs_y = support_fnc.load_pickle(pickle_file)
+
 
     def construct_model(self, num_neurons, batch_size, epoch_num, model_name, retrain_model="N", path_name="../AI_Models"):
         """
@@ -120,6 +126,7 @@ class Aiyu:
         # Hidden Layers
         hidden1 = Dense(num_neurons)(inp_layer)
         hidden2 = Dense(num_neurons)(hidden1)
+        # hidden3 = Dense(num_neurons)(hidden2)
         # Output Layers
         output = Dense(len(output_data[0]), activation='softmax')(hidden2)
         model = Model(inputs=inp_layer, outputs=output)
@@ -173,7 +180,7 @@ class Aiyu:
         global response_return
         if results[results_index] > 0.7:  # probability threshold
             resp_list = []
-            for tg in support_fnc.open_file(self.intent_file, "N")[self.intents]:
+            for tg in support_fnc.open_file(self.intent_file, report="N")[self.intents]:
                 if tg[self.tags] == conversation_type:
                     responses = tg[self.response_list]
                     resp_list.extend(responses)
@@ -191,8 +198,11 @@ class Aiyu:
                                                                                                inp,
                                                                                                resp_list)]) + "https://www.youtube.com/watch?v=dQw4w9WgXcQ&ab_channel=RickAstley"
                     else:
-                        response_return = str(support_fnc.get_ai_username(mode)) + str(
-                            responses[support_fnc.get_max_similarity_percentage(inp, resp_list)])
+                        try:
+                            response_return = str(support_fnc.get_ai_username(mode)) + str(
+                                responses[support_fnc.get_max_similarity_percentage(inp, resp_list)])
+                        except TypeError:
+                            print("WARNING: I could not find any answers for you. Please check the json file.")
         else:
             response_return = str(support_fnc.get_ai_username(mode)) + "对不起，AIYU没听懂 T_T。"
         return response_return
@@ -212,10 +222,11 @@ class Aiyu:
                 if inp.lower() == "quit":
                     self.state = AI_StateMachine.States.QUIT
                     break
+                # Prediction
                 results = self.model.predict(tf.expand_dims(support_fnc.bag_of_words(inp, self.words, self.language), axis=0))[0]  # axis = 0 adjusts the dimension for input shape
                 results_index = numpy.argmax(results)
                 conversation_type = self.labels[results_index]
-                # support_fnc.report_train_results(results, results_index, conversation_type, self.labels)  # Report Results
+                support_fnc.report_train_results(results, results_index, conversation_type, self.labels)  # Report Results
                 print(self.pick_response(inp, results, results_index, conversation_type, self.labels, "dev"))
                 round_count += 1
             # Learn State

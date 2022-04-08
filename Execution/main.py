@@ -24,10 +24,10 @@ init_state = AI_StateMachine.States.CHAT
 
 
 def build_ai():
-    aiyu = Aiyu.Aiyu(training_set, output_data, words, labels, docs_x, docs_y, model, file_names.jsn_cbot_ch_n, intents, category,
+    aiyu = Aiyu.Aiyu(training_set, output_data, words, labels, docs_x, docs_y, model, file_names.jsn_noun, intents, category,
                      patterns, response_list, language, init_state, model_name)
-    aiyu.data_processor()
-    aiyu.construct_model(16, 8, 120, "AIYU_Core", retrain_model="Y")
+    aiyu.data_processor("Noun_PKL", force_process="N", split_mode='Y')
+    aiyu.construct_model(16, 8, 120, "Sent_Classifier", retrain_model='N')
     aiyu.chat()
 
 
