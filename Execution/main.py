@@ -5,34 +5,34 @@ from Language_Data import file_names
 import jieba
 import tensorflow
 
-# Creating Lists
+# Bot Creation Parameters
 training_set = []
 output_data = []
 words = []
 labels = []
 docs_x = []
 docs_y = []
-model = None
-model_name = "LawType"
-
 intents = "intents"
 category = "category"
 patterns = "patterns"
 response_list = "responses"
 language = "ch"
 init_state = AI_StateMachine.States.CHAT
+model = None
+model_name = "LawType"
 
 
-def build_ai():
-    aiyu = Aiyu.Aiyu(training_set, output_data, words, labels, docs_x, docs_y, model, file_names.jsn_noun, intents, category,
-                     patterns, response_list, language, init_state, model_name)
+
+def build_chat_ai():
+    aiyu = Aiyu.Aiyu(training_set, output_data, words, labels, docs_x, docs_y, file_names.jsn_noun, intents, category,
+                     patterns, response_list, language, state=init_state, ai_model=model, model_name=model_name)
     aiyu.data_processor("Noun_PKL", force_process="N", split_mode='Y')
     aiyu.construct_model(16, 8, 120, "Sent_Classifier", retrain_model='N')
     aiyu.chat()
 
 
 def main(start_var):
-    build_ai()
+    build_chat_ai()
     return 0
 
 

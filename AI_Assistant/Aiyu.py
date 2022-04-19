@@ -10,7 +10,7 @@ from keras.layers import Input
 from keras.layers import Dense
 from keras.models import load_model
 from keras.models import save_model
-from AI_Assistant import AI_StateMachine
+from AI_Assistant.AI_StateMachine import States
 from nltk.stem.lancaster import LancasterStemmer  # Used to analyze words from the sentence (getting the root of the word --> only for English)
 from Tools import support_fnc
 
@@ -18,32 +18,33 @@ from Tools import support_fnc
 # 用于创建种类识别object的框架。
 class Aiyu:
     # Constructor
-    def __init__(self, training_set, output_data, words, labels, docs_x, docs_y, ai_model,
-                 intent_file, intents, tags, patterns, response_list, language, state, model_name):
+    def __init__(self, training_set, output_data, words, labels, docs_x, docs_y,
+                 intent_file, intents, tags, patterns, response_list, language, state=States.CHAT,
+                 ai_model=None, model_name=''):
         """
-        AI Constructor
         :param training_set: 训练数据（list）
         :param output_data: 输出数据（list）
         :param words: 词语容器（list）
         :param labels: 分类词容器（list）
-        :param docs_x: 训练数据容器（list）
-        :param docs_y: 训练数据容器（list)
-        :param ai_model: 模型容器（None）
+        :param docs_x: 输入训练数据（list）
+        :param docs_y: 输出训练数据（list)
         :param intent_file: .json文件路径（str）
         :param intents: .json文件标题名称（str）
         :param tags: .json内分类词总称（str）
         :param patterns: .json关键词句总称（str）
         :param response_list: .json内回复词句总称（str）
-        :param language:数据语言。en=英文，ch=中文 （str）
+        :param language: 数据语言。en=英文，ch=中文 （str）
         :param state: State Machine初始 state（str）
+        :param ai_model: AI 模型文件名
+        :param model_name: AI 模型名
         """
+        # 创建AI模型信息
         self.training = list(training_set)
         self.output = list(output_data)
         self.words = list(words)
         self.labels = list(labels)
         self.docs_x = list(docs_x)
         self.docs_y = list(docs_y)
-        self.model = ai_model
         self.intent_file = intent_file
         self.intents = intents
         self.tags = tags
@@ -51,7 +52,9 @@ class Aiyu:
         self.response_list = response_list
         self.language = language
         self.state = state
+        self.model = ai_model
         self.model_name = model_name
+
 
 
     def data_processor(self, pickle_file, force_process="N", split_mode="Y"):
@@ -124,8 +127,8 @@ class Aiyu:
         # Input Layer
         inp_layer = Input(shape=(len(self.training[0]), ))  # example: input shape = (None, 689)
         # Hidden Layers
-        hidden1 = Dense(num_neurons)(inp_layer)
-        hidden2 = Dense(num_neurons)(hidden1)
+        hidden1 = Dense(units=num_neurons, activation="tanh")(inp_layer)
+        hidden2 = Dense(units=num_neurons, activation="tanh")(hidden1)
         # hidden3 = Dense(num_neurons)(hidden2)
         # Output Layers
         output = Dense(len(output_data[0]), activation='softmax')(hidden2)
@@ -189,7 +192,7 @@ class Aiyu:
                             responses[support_fnc.get_max_similarity_percentage(inp, resp_list)]) + " " + str(
                             support_fnc.get_current_time())
                     elif conversation_type == "学习模式":
-                        self.state = AI_StateMachine.States.LEARN
+                        self.state = States.LEARN
                         response_return = str(support_fnc.get_ai_username(mode)) + str(
                             responses[support_fnc.get_max_similarity_percentage(inp, resp_list)])
                     elif conversation_type == "爱好":
@@ -212,15 +215,15 @@ class Aiyu:
         AI聊天功能
         :return: None
         """
-        self.state = AI_StateMachine.States.CHAT
+        self.state = States.CHAT
         support_fnc.clear_chat()
         round_count = 0
         while True:
             # Chat State
-            if self.state == AI_StateMachine.States.CHAT:
+            if self.state == States.CHAT:
                 inp = support_fnc.get_user_input(round_count)
                 if inp.lower() == "quit":
-                    self.state = AI_StateMachine.States.QUIT
+                    self.state = States.QUIT
                     break
                 # Prediction
                 results = self.model.predict(tf.expand_dims(support_fnc.bag_of_words(inp, self.words, self.language), axis=0))[0]  # axis = 0 adjusts the dimension for input shape
@@ -230,11 +233,11 @@ class Aiyu:
                 print(self.pick_response(inp, results, results_index, conversation_type, self.labels, "dev"))
                 round_count += 1
             # Learn State
-            if self.state == AI_StateMachine.States.LEARN:
+            if self.state == States.LEARN:
                 support_fnc.update_json(self.intent_file, self.intents, self.patterns, self.tags)
-                self.state = AI_StateMachine.States.CHAT
+                self.state = States.CHAT
             # Quit the program
-            if self.state == AI_StateMachine.States.QUIT:
+            if self.state == States.QUIT:
                 break
 
     def chat_dc(self, message):

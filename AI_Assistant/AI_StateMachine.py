@@ -6,3 +6,4 @@ class States(Enum):
     LEARN = 2
     QUIT = 3
 
+

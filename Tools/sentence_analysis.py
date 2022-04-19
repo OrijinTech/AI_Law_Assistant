@@ -1,9 +1,9 @@
-
-
 import jieba
+import support_fnc
 from jieba import posseg
 from jieba import analyse
-import support_fnc
+from AI_Assistant import Aiyu, AI_StateMachine
+import tensorflow as tf
 
 
 def sentence_structure(sentence, word_elem=''):
@@ -35,10 +35,29 @@ def key_extraction(sentence, rank_num=5):
 def calc_answer(json_file, user_sent, category):
     out_ans = ''
     data = support_fnc.open_file(json_file)
+    # Bot Creation Parameters
+    training_set = []
+    output_data = []
+    words = []
+    labels = []
+    docs_x = []
+    docs_y = []
+    intents = "intents"
+    category = "category"
+    patterns = "patterns"
+    response_list = "responses"
+    language = "ch"
+    init_state = AI_StateMachine.States.CHAT
+    model = None
+    model_name = "LawType"
+    noun_bot = Aiyu.Aiyu(training_set, output_data, words, labels, docs_x, docs_y, intents, category, patterns, response_list, language, state=init_state, ai_model=model, model_name=model_name)
+    noun_bot.construct_model(16, 8, 120, "Sent_Classifier", retrain_model='N')
     for response in data["responses"]:
+        # Predicting the object of the sentence from the user input (question for the bot).
+        results = noun_bot.model.predict(tf.expand_dims(support_fnc.bag_of_words(user_sent, noun_bot.words, noun_bot.language), axis=0))[0]
         ans_list = sentence_structure(response, 'ns')
         user_list = sentence_structure(user_sent, 'ns')
-        #for key in ans_list:
+        # for key in ans_list:
     return out_ans
 
 
