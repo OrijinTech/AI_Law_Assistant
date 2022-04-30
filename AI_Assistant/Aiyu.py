@@ -2,6 +2,7 @@ import numpy as np
 import numpy
 import tensorflow as tf
 import os
+import random
 import h5py
 import keras
 from tensorflow import keras
@@ -169,15 +170,17 @@ class Aiyu:
     #     output_data = self.output
 
 
-    def pick_response(self, inp, results, results_index, conversation_type, labels, mode):
+    def pick_response(self, inp, results, results_index, conversation_type, labels, mode, pick_mode='rand'):
         """
         选择输出文案
+        :param pick_mode:
         :param inp: 用户输入（str）
         :param results: 模型预测的分类概率数据（list）
         :param results_index: 分类数据百分比清单的index（int）
         :param conversation_type: 分类名称（str）
         :param labels: 分类清单（list）
         :param mode: 用户使用模式dev=developer，discord=用户（str）
+        :param pick_mode: 选择输出模式, rand = 随机选择输出（str）
         :return: 输出给用户的文案（str）
         """
         global response_return
@@ -202,8 +205,11 @@ class Aiyu:
                                                                                                resp_list)]) + "https://www.youtube.com/watch?v=dQw4w9WgXcQ&ab_channel=RickAstley"
                     else:
                         try:
-                            response_return = str(support_fnc.get_ai_username(mode)) + str(
-                                responses[support_fnc.get_max_similarity_percentage(inp, resp_list)])
+                            if pick_mode == 'rand':
+                                response_return = str(support_fnc.get_ai_username(mode)) + str(random.choice(responses))
+                            else:
+                                response_return = str(support_fnc.get_ai_username(mode)) + str(
+                                    responses[support_fnc.get_max_similarity_percentage(inp, resp_list)])
                         except TypeError:
                             print("WARNING: I could not find any answers for you. Please check the json file.")
         else:
@@ -229,7 +235,7 @@ class Aiyu:
                 results = self.model.predict(tf.expand_dims(support_fnc.bag_of_words(inp, self.words, self.language), axis=0))[0]  # axis = 0 adjusts the dimension for input shape
                 results_index = numpy.argmax(results)
                 conversation_type = self.labels[results_index]
-                support_fnc.report_train_results(results, results_index, conversation_type, self.labels)  # Report Results
+                # support_fnc.report_train_results(results, results_index, conversation_type, self.labels)  # Report Results
                 print(self.pick_response(inp, results, results_index, conversation_type, self.labels, "dev"))
                 round_count += 1
             # Learn State
