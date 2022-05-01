@@ -1,14 +1,31 @@
 import discord
 import Aiyu
-from Execution import main
+from AI_Assistant import AI_StateMachine
+from Language_Data import file_names
 
-# Creating Lists
 
-discord_bot = Aiyu.Aiyu(main.training_set, main.output_data, main.words, main.labels, main.docs_x, main.docs_y,
-                        main.model, main.intent_file, main.intents, main.tags, main.patterns, main.response_list,
-                        main.language, main.init_state)
-discord_bot.data_processor()
-discord_bot.train_model(8, 8, 150)
+# Bot Creation Parameters
+training_set = []
+output_data = []
+words = []
+labels = []
+docs_x = []
+docs_y = []
+intents = "intents"
+category = "category"
+patterns = "patterns"
+response_list = "responses"
+language = "ch"
+init_state = AI_StateMachine.States.CHAT
+model = None
+model_name = "LawType"
+
+
+# Bot Creation
+discord_bot = Aiyu.Aiyu(training_set, output_data, words, labels, docs_x, docs_y, file_names.jsn_cbot_ch_n, intents, category,
+                 patterns, response_list, language, state=init_state, ai_model=model, model_name=model_name)
+discord_bot.data_processor("AIYU_PKL", force_process="N", split_mode='Y')
+discord_bot.construct_model(16, 8, 120, "AIYU_Core", retrain_model='N')
 
 global responses
 

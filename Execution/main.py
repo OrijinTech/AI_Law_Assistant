@@ -6,7 +6,7 @@ import jieba
 import tensorflow
 
 # Bot Creation Parameters
-training_set = []
+global training_set
 output_data = []
 words = []
 labels = []
@@ -39,3 +39,4 @@ def main(start_var):
 # Press the green button in the gutter to run the script.
 if __name__ == "__main__":
     main(sys.argv[0])
+
