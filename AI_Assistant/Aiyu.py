@@ -170,6 +170,12 @@ class Aiyu:
     #     output_data = self.output
 
 
+
+# ==================================================================================================================================== #
+#                                                         Normal Chat Functions
+# ==================================================================================================================================== #
+
+
     def pick_response(self, inp, results, results_index, conversation_type, labels, mode, pick_mode='rand'):
         """
         选择输出文案
@@ -246,6 +252,12 @@ class Aiyu:
             if self.state == States.QUIT:
                 break
 
+
+# ==================================================================================================================================== #
+#                                                         Discord Chat Functions
+# ==================================================================================================================================== #
+
+
     def chat_dc(self, message):
         """
         聊天功能，discord版本
@@ -253,10 +265,9 @@ class Aiyu:
         :return: 输出给用户的文案（str）
         """
         inp = message.content
-        results = self.model.predict([support_fnc.bag_of_words(inp, self.words, self.language)])[0]
+        results = self.model.predict(tf.expand_dims(support_fnc.bag_of_words(inp, self.words, self.language), axis=0))[0]
         results_index = numpy.argmax(results)
         conversation_type = self.labels[results_index]
-        support_fnc.report_train_results(results, results_index, conversation_type, self.labels)
+        # support_fnc.report_train_results(results, results_index, conversation_type, self.labels)
         return self.pick_response(inp, results, results_index, conversation_type, self.labels, "discord")
-
 
