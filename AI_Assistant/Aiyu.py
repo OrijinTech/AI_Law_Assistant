@@ -19,21 +19,21 @@ from Tools import support_fnc
 # 用于创建种类识别object的框架。
 class Aiyu:
     # Constructor
-    def __init__(self, training_set, output_data, words, labels, docs_x, docs_y,
-                 intent_file, intents, tags, patterns, response_list, language, state=States.CHAT,
-                 ai_model=None, model_name=''):
+    def __init__(self, intent_file, intents, tags, patterns, response_list, training_set='', output_data='',
+                 words='', labels='', docs_x='', docs_y='', language='ch', state=States.CHAT, ai_model=None,
+                 model_name=''):
         """
+        :param intent_file: .json文件路径（str）
+        :param intents: .json文件标题名称（str）
+        :param tags: .json内分类词总称（str）
+        :param patterns: .json关键词句总称（str）
+        :param response_list: .json内回复词句总称（str）
         :param training_set: 训练数据（list）
         :param output_data: 输出数据（list）
         :param words: 词语容器（list）
         :param labels: 分类词容器（list）
         :param docs_x: 输入训练数据（list）
         :param docs_y: 输出训练数据（list)
-        :param intent_file: .json文件路径（str）
-        :param intents: .json文件标题名称（str）
-        :param tags: .json内分类词总称（str）
-        :param patterns: .json关键词句总称（str）
-        :param response_list: .json内回复词句总称（str）
         :param language: 数据语言。en=英文，ch=中文 （str）
         :param state: State Machine初始 state（str）
         :param ai_model: AI 模型文件名
@@ -55,8 +55,6 @@ class Aiyu:
         self.state = state
         self.model = ai_model
         self.model_name = model_name
-
-
 
     def data_processor(self, pickle_file, force_process="N", split_mode="Y"):
         """
@@ -106,7 +104,6 @@ class Aiyu:
             print("Finished processing data.")
         else:
             self.training, self.output, self.words, self.labels, self.docs_x, self.docs_y = support_fnc.load_pickle(pickle_file)
-
 
     def construct_model(self, num_neurons, batch_size, epoch_num, model_name, retrain_model="N", path_name="../AI_Models"):
         """

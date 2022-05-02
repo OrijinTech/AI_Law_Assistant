@@ -1,4 +1,4 @@
-import discord
+# import discord
 import Aiyu
 from AI_Assistant import AI_StateMachine
 from Language_Data import file_names
