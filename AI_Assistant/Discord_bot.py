@@ -25,7 +25,7 @@ model_name = "LawType"
 discord_bot = Aiyu.Aiyu(training_set, output_data, words, labels, docs_x, docs_y, file_names.jsn_cbot_ch_n, intents, category,
                  patterns, response_list, language, state=init_state, ai_model=model, model_name=model_name)
 discord_bot.data_processor("AIYU_PKL", force_process="N", split_mode='Y')
-discord_bot.construct_model(16, 8, 120, "AIYU_Core", retrain_model='N')
+discord_bot.construct_softmax_model(16, 8, 120, "AIYU_Core", retrain_model='N')
 
 global responses
 

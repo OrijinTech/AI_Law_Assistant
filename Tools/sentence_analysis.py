@@ -32,8 +32,9 @@ def key_extraction(sentence, rank_num=6):
     return rank_list
 
 
-def orignial_form(sentence):
+def orignial_form(sentence, aiyu_core):
     org_form = ''
+
 
 
 

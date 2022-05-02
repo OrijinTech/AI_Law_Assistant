@@ -105,7 +105,13 @@ class Aiyu:
         else:
             self.training, self.output, self.words, self.labels, self.docs_x, self.docs_y = support_fnc.load_pickle(pickle_file)
 
-    def construct_model(self, num_neurons, batch_size, epoch_num, model_name, retrain_model="N", path_name="../AI_Models"):
+
+# ==================================================================================================================================== #
+#                                                         MODEL DESIGN
+# ==================================================================================================================================== #
+
+
+    def construct_softmax_model(self, num_neurons, batch_size, epoch_num, model_name, retrain_model='N', path_name="../AI_Models"):
         """
         训练AI模型，更多在 https://tflearn.org/models/dnn/
         :param path_name: 模型储存路径
@@ -121,9 +127,8 @@ class Aiyu:
         # Preparing Variables
         training_data = self.training
         output_data = self.output
-        save_parameter = path_name + "/" + model_name
         # Input Layer
-        inp_layer = Input(shape=(len(self.training[0]), ))  # example: input shape = (None, 689)
+        inp_layer = Input(shape=(len(training_data[0]), ))  # example: input shape = (None, 689)
         # Hidden Layers
         hidden1 = Dense(units=num_neurons, activation="tanh")(inp_layer)
         hidden2 = Dense(units=num_neurons, activation="tanh")(hidden1)
@@ -133,13 +138,22 @@ class Aiyu:
         model = Model(inputs=inp_layer, outputs=output)
         # Compile Model
         model.compile(optimizer="rmsprop", loss="categorical_crossentropy", metrics=["categorical_crossentropy"])
+        self.train_model(model, batch_size, epoch_num, model_name, retrain_model, path_name)
+
+
+    # def construct_relu_model(self, num_neurons, batch_size, epoch_num, model_name, retrain_model="N", path_name="../AI_Models"):
+
+
+
+    def train_model(self, model, batch_size, epoch_num, model_name, retrain_model='N', path_name="../AI_Models"):
+        save_parameter = path_name + "/" + model_name
         # Training Decision
         if retrain_model == "Y":  # If the user wants to retrain the model.
             print("Retraining Model")
             # Train model
-            model.fit(training_data, output_data, epochs=epoch_num, batch_size=batch_size)
+            model.fit(self.training, self.output, epochs=epoch_num, batch_size=batch_size)
             # Model data
-            model_data = model.evaluate(training_data, output_data, batch_size=batch_size)
+            model_data = model.evaluate(self.training, self.output, batch_size=batch_size)
             print(model_data)
             # Save Model
             model.save(save_parameter)
@@ -152,25 +166,30 @@ class Aiyu:
         else:
             print("Model not detected.")
             # Train model
-            model.fit(training_data, output_data, epochs=epoch_num, batch_size=batch_size)
+            model.fit(self.training, self.output, epochs=epoch_num, batch_size=batch_size)
             # Model data
-            model_data = model.evaluate(training_data, output_data, batch_size=batch_size)
+            model_data = model.evaluate(self.training, self.output, batch_size=batch_size)
             print(model_data)
             # Save Model
             print("Saving Model")
             model.save(save_parameter)
             self.model = model
 
-    # Used for AI MODEL UPDATING FUNCTION
-    # def update_model(self, num_neurons, batch_size, epoch_num, model_name, retrain_model="N", path_name="../AI_Models"):
-    #     training_data = self.training
-    #     output_data = self.output
-
-
 
 # ==================================================================================================================================== #
 #                                                         Normal Chat Functions
 # ==================================================================================================================================== #
+
+
+    def model_predict(self, inp):
+        """
+        使用当前的AI来预测种类
+        :param inp: 输入字符（str）
+        :return: 所有种类的预测概率（list of double）
+        """
+        results = self.model.predict(tf.expand_dims(support_fnc.bag_of_words(inp, self.words, self.language), axis=0))[0]
+        # List of doubles of percentages of each category.
+        return results
 
 
     def pick_response(self, inp, results, results_index, conversation_type, labels, mode, pick_mode='rand'):
@@ -235,7 +254,8 @@ class Aiyu:
                     self.state = States.QUIT
                     break
                 # Prediction
-                results = self.model.predict(tf.expand_dims(support_fnc.bag_of_words(inp, self.words, self.language), axis=0))[0]  # axis = 0 adjusts the dimension for input shape
+                results = self.model_predict(inp)  # axis = 0 adjusts the dimension for input shape
+                print(results)
                 results_index = numpy.argmax(results)
                 conversation_type = self.labels[results_index]
                 # support_fnc.report_train_results(results, results_index, conversation_type, self.labels)  # Report Results

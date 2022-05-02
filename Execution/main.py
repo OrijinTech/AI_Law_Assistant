@@ -18,7 +18,7 @@ def build_chat_ai():
     aiyu = Aiyu.Aiyu(file_names.jsn_cbot_ch_n, intents, category, patterns, response_list, state=init_state,
                      ai_model=model, model_name=model_name)
     aiyu.data_processor("AIYU_PKL", force_process="Y", split_mode='Y')
-    aiyu.construct_model(16, 8, 120, "AIYU_Core", retrain_model='Y')
+    aiyu.construct_softmax_model(16, 8, 120, "AIYU_Core", retrain_model='Y')
     aiyu.chat()
 
 
