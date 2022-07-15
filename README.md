@@ -13,7 +13,8 @@ Major Research Areas:
 
 ------------------------------------------------------------------------------------------------------------------------------
 
-UPDATE 0.1
+UPDATE 0.1:
+
 In this update, AIYU is able to categorize and detect the chat topic. 
 
 
